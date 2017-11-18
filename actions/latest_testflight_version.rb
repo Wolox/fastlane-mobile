@@ -6,9 +6,14 @@ module Fastlane
 
       def self.run(params)
         Spaceship::Tunes.login
+
+        # This may be done automatically, but for some reason it has to be done manually.
+        # Open issue: https://github.com/fastlane/fastlane/issues/10944
+        Spaceship::Tunes.client.team_id = CredentialsManager::AppfileConfig.try_fetch_value(:itc_team_id)
+
         app = Spaceship::Tunes::Application.find(params[:bundle_id])
         if app.nil?
-          UI.abort_with_message! "The application is not yet created in iTunes Connect."
+          UI.abort_with_message! "The application with bundle ID '#{params[:bundle_id]}' is not yet created in iTunes Connect."
         end
         app.all_build_train_numbers.max
       end
