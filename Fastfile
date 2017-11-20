@@ -2,9 +2,6 @@
 fastlane_version "2.65.0"
 default_platform :ios
 
-# Default path formatters
-pem_output_path = "%s_push_certificates"
-
 # Default build configuration by action
 build_configurations = {
   test: "Debug",
@@ -275,7 +272,7 @@ reflected in `Info.plist` during building."
       app_identifier: bundle_identifier,
       force: false,
       p12_password: p12_password,
-      output_path: pem_output_path % build_configuration.to_s
+      output_path: "#{build_configuration.to_s}_push_certificates"
     )
   end
 
