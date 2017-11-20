@@ -3,7 +3,6 @@ fastlane_version "2.65.0"
 default_platform :ios
 
 # Default path formatters
-project_xcconfig_path = "%s/ConfigurationFiles/%s.xcconfig"
 pem_output_path = "%s_push_certificates"
 
 # Default build configuration by action
@@ -167,7 +166,7 @@ reflected in `Info.plist` during building."
 
       desc "Get rollbar server access token from configuration file."
       rollbar_server_access_token = read_xcconfig_property(
-        xcconfig_path: project_xcconfig_path % [project_name, build_configurations[build_configuration]],
+        build_configuration: build_configurations[build_configuration],
         xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
       )
 
