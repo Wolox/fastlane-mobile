@@ -5,7 +5,6 @@ default_platform :ios
 # Default path formatters
 project_xcconfig_path = "%s/ConfigurationFiles/%s.xcconfig"
 pem_output_path = "%s_push_certificates"
-dsym_zip_path = "%s.app.dSYM.zip"
 
 # Default build configuration by action
 build_configurations = {
@@ -180,7 +179,6 @@ reflected in `Info.plist` during building."
           access_token: rollbar_server_access_token,
           version: String(next_build_number),
           bundle_identifier: bundle_identifier,
-          dsym_zip_path: dsym_zip_path % project_name
         )
 
       end
