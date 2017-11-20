@@ -18,14 +18,6 @@ match_types = {
   production: "appstore"
 }
 
-# Default App ID names by build configuration
-app_names = {
-  test: "%s Dev",
-  qa: "%s Alpha",
-  appstore: "%s",
-  production: "%s"
-}
-
 platform :ios do
 
   # Run this before doing anything else
@@ -209,16 +201,16 @@ reflected in `Info.plist` during building."
 
     desc "Remember after this point to choose this profile in xCode Signing (Development)"
     create_app(
-      app_name: app_names[:test] % project_name,
       build_configuration: build_configurations[:test],
+      app_name: get_application_name(build_configuration: :test) % project_name,
       skip_itc: true,
       match_type: match_types[:test],
     )
 
     desc "Remember after this point to choose this profile in xCode Signing (Alpha)"
     create_app(
-      app_name: app_names[:qa] % project_name,
       build_configuration: build_configurations[:qa],
+      app_name: get_application_name(build_configuration: :qa) % project_name,
       skip_itc: false,
       match_type: match_types[:qa],
     )
@@ -230,8 +222,8 @@ reflected in `Info.plist` during building."
     
     desc "Remember after this point to choose this profile in xCode Signing (Beta)"
     create_app(
-      app_name: app_names[:appstore] % project_name,
       build_configuration: build_configurations[:appstore],
+      app_name: get_application_name(build_configuration: :appstore) % project_name,
       skip_itc: false,
       match_type: match_types[:appstore],
     )
