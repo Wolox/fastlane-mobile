@@ -12,9 +12,9 @@ xcode-select --install
 
 <table width="100%" >
 <tr>
-<th width="33%"><a href="http://brew.sh">Homebrew</a></td>
-<th width="33%">Installer Script</td>
-<th width="33%">Rubygems</td>
+<th width="33%"><a href="http://brew.sh">Homebrew</a></th>
+<th width="33%">Installer Script</th>
+<th width="33%">RubyGems</th>
 </tr>
 <tr>
 <td width="33%" align="center">macOS</td>
@@ -59,6 +59,16 @@ Creates the `App ID` and `Provisioning Profile` for the configurations mapped to
 fastlane ios create_appstore_app
 ```
 Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`.
+### ios generate_push_certificates_development
+```
+fastlane ios generate_push_certificates_development
+```
+Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`.
+### ios generate_push_certificates_appstore
+```
+fastlane ios generate_push_certificates_appstore
+```
+Generates the push notifications certificates for the build configurations mapped to `:appstore`.
 ### ios add_device
 ```
 fastlane ios add_device
