@@ -2,14 +2,6 @@
 fastlane_version "2.65.0"
 default_platform :ios
 
-# Default build configuration by action
-build_configurations = {
-  test: "Debug",
-  qa: "Alpha",
-  appstore: "Release",
-  production: "Production"
-}
-
 platform :ios do
 
   # Run this before doing anything else
@@ -19,6 +11,7 @@ platform :ios do
     UI.message "Running lane for project: `%s`" % project_name
 
     desc "Validate the configured bundle identifiers match the expected ones."
+    build_configurations = Actions::GetBuildConfigurationAction::BUILD_CONFIGURATIONS
     expected_bundle_identifiers = Hash[build_configurations.values.uniq.map { |each| [each, []] }]
     build_configurations.each do |key, value|
       expected_bundle_identifiers[value].push(infer_bundle_identifier(build_configuration: key))
@@ -65,7 +58,8 @@ platform :ios do
   end
 
   desc "Releases a new version to `TestFlight`. This lane must receive the following parameters:"
-  desc "- build_configuration: A build configuration to deploy. Can be any of: `%s`" % build_configurations.keys.to_s
+  desc "- build_configuration: A build configuration to deploy. \
+Can be any of: `%s`" % Actions::GetBuildConfigurationAction::BUILD_CONFIGURATIONS.keys.to_s
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
   Its allowed values depend on the configuration: `%s`" % Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES.to_s
   desc ""
@@ -95,7 +89,7 @@ reflected in `Info.plist` during building."
 
     desc "Read bundle identifier from project configuration."
     bundle_identifier = read_project_property(
-      build_configuration: build_configurations[build_configuration],
+      build_configuration: get_build_configuration(build_configuration: build_configuration),
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -141,13 +135,13 @@ reflected in `Info.plist` during building."
       desc "Build"
       build_app(
         app_identifier: bundle_identifier,
-        configuration: build_configurations[build_configuration],
+        build_configuration: get_build_configuration(build_configuration: build_configuration),
         match_type: get_match_type(build_configuration: build_configuration)
       )
 
       desc "Get rollbar server access token from configuration file."
       rollbar_server_access_token = read_xcconfig_property(
-        build_configuration: build_configurations[build_configuration],
+        build_configuration: get_build_configuration(build_configuration: build_configuration),
         xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
       )
 
@@ -180,7 +174,7 @@ reflected in `Info.plist` during building."
 
     desc "Run scan with default project and scheme"
     scan(
-      configuration: build_configurations[:test],
+      configuration: get_build_configuration(build_configuration: :test),
       # Because of a supposed Apple bug, CI builds fail if it doesn't run in iPhoneSE: travis-ci/travis-ci#6422
       devices: ['iPhone SE'],
       clean: false
@@ -193,16 +187,16 @@ reflected in `Info.plist` during building."
 
     desc "Remember after this point to choose this profile in xCode Signing (Development)"
     create_app(
-      build_configuration: build_configurations[:test],
       app_name: get_application_name(build_configuration: :test) % project_name,
+      build_configuration: get_build_configuration(build_configuration: :test),
       skip_itc: true,
       match_type: get_match_type(build_configuration: :test),
     )
 
     desc "Remember after this point to choose this profile in xCode Signing (Alpha)"
     create_app(
-      build_configuration: build_configurations[:qa],
       app_name: get_application_name(build_configuration: :qa) % project_name,
+      build_configuration: get_build_configuration(build_configuration: :qa),
       skip_itc: false,
       match_type: get_match_type(build_configuration: :qa),
     )
@@ -214,8 +208,8 @@ reflected in `Info.plist` during building."
     
     desc "Remember after this point to choose this profile in xCode Signing (Beta)"
     create_app(
-      build_configuration: build_configurations[:appstore],
       app_name: get_application_name(build_configuration: :appstore) % project_name,
+      build_configuration: get_build_configuration(build_configuration: :appstore),
       skip_itc: false,
       match_type: get_match_type(build_configuration: :appstore),
     )
@@ -241,7 +235,7 @@ reflected in `Info.plist` during building."
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
-      build_configuration: build_configurations[build_configuration],
+      build_configuration: get_build_configuration(build_configuration: build_configuration),
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -293,7 +287,7 @@ reflected in `Info.plist` during building."
 
     desc "Build the app using default project and scheme"
     gym(
-      configuration: options[:configuration],
+      configuration: options[:build_configuration],
       include_symbols: true,
       # bitcode is disabled for the dsym file to keep valid after app is uploaded to app store
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
