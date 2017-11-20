@@ -10,14 +10,6 @@ build_configurations = {
   production: "Production"
 }
 
-# Default match types by build configuration
-match_types = {
-  test: "development",
-  qa: "appstore",
-  appstore: "appstore",
-  production: "appstore"
-}
-
 platform :ios do
 
   # Run this before doing anything else
@@ -150,7 +142,7 @@ reflected in `Info.plist` during building."
       build_app(
         app_identifier: bundle_identifier,
         configuration: build_configurations[build_configuration],
-        match_type: match_types[build_configuration]
+        match_type: get_match_type(build_configuration: build_configuration)
       )
 
       desc "Get rollbar server access token from configuration file."
@@ -204,7 +196,7 @@ reflected in `Info.plist` during building."
       build_configuration: build_configurations[:test],
       app_name: get_application_name(build_configuration: :test) % project_name,
       skip_itc: true,
-      match_type: match_types[:test],
+      match_type: get_match_type(build_configuration: :test),
     )
 
     desc "Remember after this point to choose this profile in xCode Signing (Alpha)"
@@ -212,7 +204,7 @@ reflected in `Info.plist` during building."
       build_configuration: build_configurations[:qa],
       app_name: get_application_name(build_configuration: :qa) % project_name,
       skip_itc: false,
-      match_type: match_types[:qa],
+      match_type: get_match_type(build_configuration: :qa),
     )
 
   end
@@ -225,7 +217,7 @@ reflected in `Info.plist` during building."
       build_configuration: build_configurations[:appstore],
       app_name: get_application_name(build_configuration: :appstore) % project_name,
       skip_itc: false,
-      match_type: match_types[:appstore],
+      match_type: get_match_type(build_configuration: :appstore),
     )
 
   end
@@ -260,7 +252,7 @@ reflected in `Info.plist` during building."
 
     pem(
       generate_p12: true,
-      development: match_types[build_configuration] == "development",
+      development: get_match_type(build_configuration: build_configuration) == "development",
       app_identifier: bundle_identifier,
       force: false,
       p12_password: p12_password,
