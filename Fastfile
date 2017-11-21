@@ -4,93 +4,78 @@ default_platform :ios
 
 platform :ios do
 
-  # Run this before doing anything else
+  desc "Run this before doing anything else"
+  desc "Perform project configurations validations."
   before_all do
-
-    desc "Perform project configurations validations."
     validate
-    
   end
 
-  # After all the steps have completed succesfully, run this.
+  desc "After all the steps have completed succesfully, run this."
+  desc "Remove all build artifacts created by fastlane to upload."
   after_all do |lane|
-
-    desc "Remove all build artifacts created by fastlane to upload."
     clean_build_artifacts
-
   end
 
-  # If there was an error, run this.
+  desc "If there was an error, run this."
+  desc "Remove all build artifacts created by fastlane to upload."
   error do |lane, exception|
-
-    desc "Remove all build artifacts created by fastlane to upload."
     clean_build_artifacts
-
   end
 
-  desc "New release to `TestFlight` for QA(Alpha). This lane will never update the version, only the build number."
+  desc "New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number."
   lane :release_qa do
     release build_configuration: :qa
   end
 
-  desc "New release to `TestFlight` for Appstore."
+  desc "New release to iTunes Connect for AppStore (Release) in Wolox account."
   desc "Parameters:"
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
-  lane :release_appstore do |options|
+  lane :release_internal_appstore do |options|
     release build_configuration: :appstore, bump_type: options[:bump_type]
+  end
+
+  desc "New release to iTunes Connect for AppStore (Production) in third party account."
+  desc "Parameters:"
+  desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
+  lane :release_external_appstore do |options|
+    release build_configuration: :production, bump_type: options[:bump_type]
   end
 
   desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`."
   lane :test do
-
-    desc "Run scan with default project and scheme"
-    run_tests
-
+    run_tests build_configuration_key: :test
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`."
   lane :create_development_app do
-
-    desc "Remember after this point to choose this profile in xCode Signing (Development)"
-    create_app(
-      app_name: get_application_name(build_configuration: :test) % project_name,
-      build_configuration: get_build_configuration(build_configuration: :test),
-      skip_itc: true,
-      match_type: get_match_type(build_configuration: :test),
-    )
-
-    desc "Remember after this point to choose this profile in xCode Signing (Alpha)"
-    create_app(
-      app_name: get_application_name(build_configuration: :qa) % project_name,
-      build_configuration: get_build_configuration(build_configuration: :qa),
-      skip_itc: false,
-      match_type: get_match_type(build_configuration: :qa),
-    )
-
+    create_app build_configuration: :test
+    create_app build_configuration: :qa
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`."
-  lane :create_appstore_app do
-    
-    desc "Remember after this point to choose this profile in xCode Signing (Beta)"
-    create_app(
-      app_name: get_application_name(build_configuration: :appstore) % project_name,
-      build_configuration: get_build_configuration(build_configuration: :appstore),
-      skip_itc: false,
-      match_type: get_match_type(build_configuration: :appstore),
-    )
+  lane :create_internal_appstore_app do
+    create_app build_configuration: :appstore
+  end
 
+  desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:production`."
+  lane :create_external_appstore_app do
+    create_app build_configuration_key: :production
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`."
-  lane :generate_push_certificates_development do |options|
+  lane :generate_push_certificates_development do
     generate_push_certificates build_configuration: :test
     generate_push_certificates build_configuration: :qa
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:appstore`."
-  lane :generate_push_certificates_appstore do |options|
+  lane :generate_push_certificates_internal_appstore do
     generate_push_certificates build_configuration: :appstore
+  end
+
+  desc "Generates the push notifications certificates for the build configurations mapped to `:production`."
+  lane :generate_push_certificates_external_appstore do
+    generate_push_certificates build_configuration: :production
   end
 
   desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."

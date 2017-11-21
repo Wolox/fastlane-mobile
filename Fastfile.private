@@ -49,16 +49,17 @@ reflected in `Info.plist` during building."
   desc "First deploy must always be a `%s`" % :major
   private_lane :release do |options|
 
-    build_configuration = options[:build_configuration]
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration_key)
 
-    if Actions::CheckBumpTypeAction.bump_type_allowed? build_configuration, options[:bump_type]
-      allowed_bump_types = Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES[build_configuration]
+    if Actions::CheckBumpTypeAction.bump_type_allowed? build_configuration_key, options[:bump_type]
+      allowed_bump_types = Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES[build_configuration_key]
       UI.user_error! "The bump_type specified for this lane can only be one of `%s`" % allowed_bump_types.to_s
     end
 
     desc "Read bundle identifier from project configuration."
     bundle_identifier = read_project_property(
-      build_configuration: get_build_configuration(build_configuration: build_configuration),
+      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -78,12 +79,12 @@ reflected in `Info.plist` during building."
     ).to_i
 
     bump_type = check_bump_type(
-      build_configuration: build_configuration,
+      build_configuration: build_configuration_key,
       version: current_version_version,
       bump_type: options[:bump_type]
     ).to_s
 
-    UI.message "Will release app increasing bump type: `%s`" % bump_type
+    UI.message "Will release app increasing bump type: `#{bump_type}`"
 
     desc "Define next build number depending on bump_type."
     current_build_number = bump_type == "build" ? current_build_version : Actions::CheckBumpTypeAction::FIRST_BUILD
@@ -103,14 +104,12 @@ reflected in `Info.plist` during building."
     begin
       desc "Build"
       build_app(
-        app_identifier: bundle_identifier,
-        build_configuration: get_build_configuration(build_configuration: build_configuration),
-        match_type: get_match_type(build_configuration: build_configuration)
+        build_configuration: build_configuration_key
       )
 
       desc "Get rollbar server access token from configuration file."
       rollbar_server_access_token = read_xcconfig_property(
-        build_configuration: get_build_configuration(build_configuration: build_configuration),
+        build_configuration: build_configuration,
         xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
       )
 
@@ -127,7 +126,7 @@ reflected in `Info.plist` during building."
       end
 
       desc "Upload the built app to TestFlight."
-      UI.message "Uploading version `%s` build `%s`" % [current_version_version, next_build_number]
+      UI.message "Uploading version `#{current_version_version}` build `#{next_build_number}`"
       publish_testflight
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
@@ -138,12 +137,15 @@ reflected in `Info.plist` during building."
     end
   end
 
-  desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`."
-  private_lane :run_tests do
+  desc "Executes the tests for the project using `scan`."
+  private_lane :run_tests do |options|
+
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration)
 
     desc "Run scan with default project and scheme"
     scan(
-      configuration: get_build_configuration(build_configuration: :test),
+      configuration: build_configuration,
       # Because of a supposed Apple bug, CI builds fail if it doesn't run in iPhoneSE: travis-ci/travis-ci#6422
       devices: ['iPhone SE'],
       clean: false
@@ -155,13 +157,25 @@ reflected in `Info.plist` during building."
   desc "It uses the same password stored in keychain for the current user."
   desc "Make sure to store safely the output of this command in the right `Google Drive` folder."
   private_lane :generate_push_certificates do |options|
-    build_configuration = options[:build_configuration]
+
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration_key)
+    match_type = get_match_type(build_configuration: build_configuration_key)
+    is_development = match_type == Actions::GetMatchTypeAction::MATCH_TYPES[:test]
+    output_path = "#{build_configuration_key.to_s}_push_certificates"
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
-      build_configuration: get_build_configuration(build_configuration: build_configuration),
+      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
+
+    UI.message "Attempting to create push certificates for build configuration '#{build_configuration}'"
+    UI.message "Creating push certificates as: '#{is_development ? 'development' : 'production'}' and bundle ID: '#{bundle_identifier}'"
+    confirmation = UI.input "If the parameters are correct, proceed: Y/n"
+    unless confirmation.empty? || confirmation.downcase == "y"
+      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+    end
 
     desc "Password for current user from keychain"
     user = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
@@ -170,27 +184,38 @@ reflected in `Info.plist` during building."
 
     pem(
       generate_p12: true,
-      development: get_match_type(build_configuration: build_configuration) == "development",
+      development: is_development,
       app_identifier: bundle_identifier,
       force: false,
       p12_password: p12_password,
-      output_path: "#{build_configuration.to_s}_push_certificates"
+      output_path: output_path
     )
+
   end
 
   desc "Builds the app creating the `.ipa` and `.dsym` files"
   private_lane :build_app do |options|
 
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration_key)
+    match_type = get_match_type(build_configuration: build_configuration_key)
+
+    desc "Bundle identifier from xCode project"
+    bundle_identifier = read_project_property(
+      build_configuration: build_configuration,
+      build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
+    )
+
     desc "Download provisioning profiles"
     match(
-      app_identifier: options[:app_identifier],
-      type: options[:match_type],
+      app_identifier: bundle_identifier,
+      type: match_type,
       readonly: true
     )
 
     desc "Build the app using default project and scheme"
     gym(
-      configuration: options[:build_configuration],
+      configuration: build_configuration,
       include_symbols: true,
       # bitcode is disabled for the dsym file to keep valid after app is uploaded to app store
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
@@ -204,14 +229,22 @@ reflected in `Info.plist` during building."
   desc "Keep these new certificates and profiles in sync with Match repository"
   private_lane :create_app do |options|
 
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration_key)
+    app_name = get_application_name(build_configuration: build_configuration_key) % project_name
+    skip_itc = build_configuration_key == :test
+    match_type = get_match_type(build_configuration: build_configuration_key)
+
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
-      build_configuration: options[:build_configuration],
+      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
-    UI.message "Attempting to create application for build configuration '#{options[:build_configuration]}'."
-    UI.message "Using name: '#{options[:app_name]}' and bundle ID: '#{bundle_identifier}'"
+    UI.message "Attempting to create application for build configuration '#{build_configuration}'"
+    UI.message "Creating application using name: '#{app_name}' and bundle ID: '#{bundle_identifier}'"
+    UI.message "The application creation in iTunes Connect will be #{skip_itc ? 'skipped' : 'performed'}"
+    UI.message "Creating profile with match type '#{match_type}' and bundle ID: '#{bundle_identifier}'"
     confirmation = UI.input "If the parameters are correct, proceed: Y/n"
     unless confirmation.empty? || confirmation.downcase == "y"
       UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
@@ -219,21 +252,21 @@ reflected in `Info.plist` during building."
 
     desc "Create App ID in developer center"
     produce(
-      app_name: options[:app_name],
+      app_name: app_name,
       app_identifier: bundle_identifier,
-      skip_itc: options[:skip_itc]
+      skip_itc: skip_itc
     )
 
     desc "Generate provisioning profile if no present"
     match_result = match(
       app_identifier: bundle_identifier,
-      type: options[:match_type],
+      type: match_type,
       readonly: false
     )
 
     desc "Update project signing identity and provisioning profile"
     set_project_signing(
-      build_configuration: options[:build_configuration],
+      build_configuration: build_configuration,
       provisioning_profile: match_result[bundle_identifier],
       development_team: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
     )
