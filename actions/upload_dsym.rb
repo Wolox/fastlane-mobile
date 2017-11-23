@@ -8,14 +8,17 @@ module Fastlane
       # the provided configuration.
       # Returns if the upload was successful.
 
+      # Default dsym zip path used by Fastlane.
+      DSYM_ZIP_PATH = "%s.app.dSYM.zip"
+
       def self.run(params)
         # Uploads the zipped dsym file to Rollbar.
 
-      response = %x<curl -X POST "https://api.rollbar.com/api/1/dsym" \
+        response = %x<curl -X POST "https://api.rollbar.com/api/1/dsym" \
           -F access_token=#{params[:access_token]} \
           -F version=#{params[:version]} \
           -F bundle_identifier=#{params[:bundle_identifier]} \
-          -F dsym=@"#{params[:dsym_zip_path]}">
+          -F dsym=@"#{DSYM_ZIP_PATH % params[:project_name]}">
 
         # If upload was successful "error" is 0.
         # https://rollbar.com/docs/api/items_post/
@@ -35,10 +38,10 @@ module Fastlane
 
       def self.available_options
         [
+          FastlaneCore::ConfigItem.new(key: :project_name, optional: true, default_value: ProjectNameAction.default_project_name),
           FastlaneCore::ConfigItem.new(key: :access_token, optional: false),
           FastlaneCore::ConfigItem.new(key: :version, optional: false),
           FastlaneCore::ConfigItem.new(key: :bundle_identifier, optional: false),
-          FastlaneCore::ConfigItem.new(key: :dsym_zip_path, optional: false),
         ]
       end
 

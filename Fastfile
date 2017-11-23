@@ -2,12 +2,6 @@
 fastlane_version "2.65.0"
 default_platform :ios
 
-# Default path formatters
-project_plist_path = "%s/Info.plist"
-project_xcconfig_path = "%s/ConfigurationFiles/%s.xcconfig"
-pem_output_path = "%s_push_certificates"
-dsym_zip_path = "%s.app.dSYM.zip"
-
 # Default build configuration by action
 build_configurations = {
   test: "Debug",
@@ -151,7 +145,7 @@ reflected in `Info.plist` during building."
     desc "Set version and build number in Info.plist"
     set_info_plist_version(
       version_number: current_version_version,
-      build_number: next_build_number
+      build_number: next_build_number.to_s
     )
 
     desc "Update version number in `Info.plist` depending in bump_type."
@@ -169,7 +163,7 @@ reflected in `Info.plist` during building."
 
       desc "Get rollbar server access token from configuration file."
       rollbar_server_access_token = read_xcconfig_property(
-        xcconfig_path: project_xcconfig_path % [project_name, build_configurations[build_configuration]],
+        build_configuration: build_configurations[build_configuration],
         xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
       )
 
@@ -181,7 +175,6 @@ reflected in `Info.plist` during building."
           access_token: rollbar_server_access_token,
           version: String(next_build_number),
           bundle_identifier: bundle_identifier,
-          dsym_zip_path: dsym_zip_path % project_name
         )
 
       end
@@ -192,38 +185,10 @@ reflected in `Info.plist` during building."
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
       set_info_plist_version(
-        version_number: Actions::CheckBumpTypeAction::FIRST_VERSION,
-        build_number: Actions::CheckBumpTypeAction::FIRST_BUILD
+        version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
+        build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
       )
     end
-  end
-
-  desc "Sets the version and build number in the Info.plist"
-  desc "Parameters:"
-  desc "- version_number: The version to set in the Info.plist"
-  desc "- build_number: The build number to set in the Info.plist"
-
-  private_lane :set_info_plist_version do |options|
-    version_number = options[:version_number]
-    build_number = options[:build_number]
-
-    if version_number.nil? || build_number.nil?
-      UI.user_error! "Both the version and build number must be provided"
-    end
-
-    desc "Set version number in `Info.plist`."
-    set_info_plist_value(
-      path: project_plist_path % project_name,
-      key: 'CFBundleShortVersionString',
-      value: version_number.to_s
-    )
-
-    desc "Set build number in `Info.plist`."
-    set_info_plist_value(
-      path: project_plist_path % project_name,
-      key: 'CFBundleVersion',
-      value: build_number.to_s
-    )
   end
 
   desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`."
@@ -307,7 +272,7 @@ reflected in `Info.plist` during building."
       app_identifier: bundle_identifier,
       force: false,
       p12_password: p12_password,
-      output_path: pem_output_path % build_configuration.to_s
+      output_path: "#{build_configuration.to_s}_push_certificates"
     )
   end
 
