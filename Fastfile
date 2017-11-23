@@ -5,6 +5,7 @@ default_platform :ios
 # Default path formatters
 project_plist_path = "%s/Info.plist"
 project_xcconfig_path = "%s/ConfigurationFiles/%s.xcconfig"
+pem_output_path = "%s_push_certificates"
 dsym_zip_path = "%s.app.dSYM.zip"
 
 # Default build configuration by action
@@ -270,6 +271,44 @@ reflected in `Info.plist` during building."
       match_type: match_types[:appstore],
     )
 
+  end
+
+  desc "Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`."
+  lane :generate_push_certificates_development do |options|
+    generate_push_certificates build_configuration: :test
+    generate_push_certificates build_configuration: :qa
+  end
+
+  desc "Generates the push notifications certificates for the build configurations mapped to `:appstore`."
+  lane :generate_push_certificates_appstore do |options|
+    generate_push_certificates build_configuration: :appstore
+  end
+
+  desc "Generates the push notifications certificates for the build configuration provided."
+  desc "It uses the same password stored in keychain for the current user."
+  desc "Make sure to store safely the output of this command in the right `Google Drive` folder."
+  private_lane :generate_push_certificates do |options|
+    build_configuration = options[:build_configuration]
+
+    desc "Bundle identifier from xCode project"
+    bundle_identifier = read_project_property(
+      build_configuration: build_configurations[build_configuration],
+      build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
+    )
+
+    desc "Password for current user from keychain"
+    user = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
+    keychain_entry = CredentialsManager::AccountManager.new(user: user)
+    p12_password = keychain_entry.password
+
+    pem(
+      generate_p12: true,
+      development: match_types[build_configuration] == "development",
+      app_identifier: bundle_identifier,
+      force: false,
+      p12_password: p12_password,
+      output_path: pem_output_path % build_configuration.to_s
+    )
   end
 
   desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
