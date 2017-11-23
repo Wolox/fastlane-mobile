@@ -8,13 +8,16 @@ module Fastlane
       # this script updates the provisioning profile and development team
       # to have proper signing identities in xCode.
 
+      PROVISIONING_PROFILE_SPECIFIER = 'PROVISIONING_PROFILE_SPECIFIER'
+      DEVELOPMENT_TEAM = 'DEVELOPMENT_TEAM'
+
       def self.run(params)
         # Set provisioning profile in xCode
         Actions::UpdateProjectPropertyAction.run(
           project: params[:project],
           scheme: params[:scheme],
           build_configuration: params[:build_configuration],
-          build_setting: 'PROVISIONING_PROFILE_SPECIFIER',
+          build_setting: PROVISIONING_PROFILE_SPECIFIER,
           build_setting_value: params[:provisioning_profile]
         )
 
@@ -23,7 +26,7 @@ module Fastlane
           project: params[:project],
           scheme: params[:scheme],
           build_configuration: params[:build_configuration],
-          build_setting: 'DEVELOPMENT_TEAM',
+          build_setting: DEVELOPMENT_TEAM,
           build_setting_value: params[:development_team]
         )
       end
