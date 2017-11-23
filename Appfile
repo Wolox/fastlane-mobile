@@ -4,3 +4,6 @@ apple_id "ios-si@wolox.com.ar"
 # Developer Portal Team ID. (ex: "RDFGA2FGMD")
 # Don't forget to change this in Matchfile also.
 team_id "7XS5GQGS29"
+
+# iTunes Connect Team ID. (ex: "18742801")
+itc_team_id "95757806"
