@@ -35,10 +35,10 @@ module Fastlane
       def self.default_project
         projects = Dir.entries('.').select { |each| File.extname(each) == PROJECT_EXTENSION }
         if projects.length == 0
-          UI.abort_with_message! "No projects with extension %s found in root directory." % PROJECT_EXTENSION
+          UI.abort_with_message! "No projects with extension '#{PROJECT_EXTENSION}' found in root directory."
         end
         if projects.length > 1
-          UI.abort_with_message! "Multiple projects with extension %s found in root directory." % PROJECT_EXTENSION
+          UI.abort_with_message! "Multiple projects with extension '#{PROJECT_EXTENSION}' found in root directory."
         end
         projects.first
       end
@@ -51,7 +51,7 @@ module Fastlane
           .targets
           .find { |each| each.name == File.basename(default_project, File.extname(default_project)) }
         if target.nil?
-          UI.abort_with_message! "No target matching project name %s found." % PROJECT_EXTENSION
+          UI.abort_with_message! "No target matching project name '#{PROJECT_EXTENSION}' found."
         end
         target.name
       end
