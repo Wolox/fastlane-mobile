@@ -200,6 +200,7 @@ reflected in `Info.plist` during building."
   end
 
   desc "Create App ID and Provisioning Profile in Member Center"
+  desc "Updates project settings using provisioning profile"
   desc "Keep these new certificates and profiles in sync with Match repository"
   private_lane :create_app do |options|
 
@@ -224,11 +225,20 @@ reflected in `Info.plist` during building."
     )
 
     desc "Generate provisioning profile if no present"
-    match(
+    match_result = match(
       app_identifier: bundle_identifier,
       type: options[:match_type],
       readonly: false
     )
+
+    desc "Update project signing identity and provisioning profile"
+    set_project_signing(
+      build_configuration: options[:build_configuration],
+      provisioning_profile: match_result[bundle_identifier],
+      development_team: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+    )
+
+    UI.success "Project configured successfully. Please commit your changes."
 
   end
 

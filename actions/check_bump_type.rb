@@ -37,7 +37,7 @@ module Fastlane
         # As long as the user chooses a non allowed bump type, ask again until a valid one is provided.
         bump_type = params[:bump_type]
         while not allowed_bump_types.include? bump_type do
-          bump_type = UI.input "Choose the `bump_type` representing the type of deploy. It can be any of %s" % allowed_bump_types.to_s
+          bump_type = UI.input "Choose the `bump_type` representing the type of deploy. It can be any of #{allowed_bump_types.to_s}"
           bump_type = bump_type.to_sym
         end
 

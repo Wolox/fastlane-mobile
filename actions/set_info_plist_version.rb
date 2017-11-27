@@ -7,18 +7,21 @@ module Fastlane
       # Defaul path for project Info.plist
       PROJECT_PLIST_PATH = "%s/Info.plist".freeze
 
+      VERSION_NUMBER_KEY = 'CFBundleShortVersionString'
+      BUILD_NUMBER_KEY = 'CFBundleVersion'
+
       def self.run(params)
         # Set version number in `Info.plist`
         Actions::SetInfoPlistValueAction.run(
           path: PROJECT_PLIST_PATH % params[:project_name],
-          key: 'CFBundleShortVersionString',
+          key: VERSION_NUMBER_KEY,
           value: params[:version_number]
         )
 
         # Set build number in `Info.plist`
         Actions::SetInfoPlistValueAction.run(
           path: PROJECT_PLIST_PATH % params[:project_name],
-          key: 'CFBundleVersion',
+          key: BUILD_NUMBER_KEY,
           value: params[:build_number]
         )
       end
