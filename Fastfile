@@ -1,5 +1,5 @@
 import 'Fastfile.private'
-fastlane_version "2.65.0"
+fastlane_version '2.66.0'
 default_platform :ios
 
 platform :ios do
