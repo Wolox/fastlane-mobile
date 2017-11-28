@@ -5,7 +5,7 @@ platform :ios do
   private_lane :validate do
 
     desc "Validate the project name and main target are properly configured."
-    UI.message "Running lane for project: `%s`" % project_name
+    UI.message "Running lane for project: '#{project_name}'."
 
     desc "Validate the configured bundle identifiers match the expected ones."
     build_configurations = Actions::GetBuildConfigurationAction::BUILD_CONFIGURATIONS
@@ -24,13 +24,22 @@ platform :ios do
       end
     end
 
+    UI.success "Project validations succeeded!"
+
+  end
+
+  private_lane :clean do
+
+    UI.message "Removing all build artifacts created by fastlane."
+    clean_build_artifacts
+
   end
 
   desc "Releases a new version to `TestFlight`. This lane must receive the following parameters:"
   desc "- build_configuration: A build configuration to deploy. \
 Can be any of: `%s`" % Actions::GetBuildConfigurationAction::BUILD_CONFIGURATIONS.keys.to_s
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
-  Its allowed values depend on the configuration: `%s`" % Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES.to_s
+  Its allowed values depend on the configuration: '#{Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES.to_s}'."
   desc ""
   desc "It has basically 3 main responsabilities: build/version number managing, app building, and deploy."
   desc ""
@@ -44,9 +53,9 @@ reflected in `Info.plist` during building."
   desc "- Uploads the application to `TestFlight` using `pilot`."
   desc ""
   desc "Check [here](http://semver.org/) for reference about versioning."
-  desc "Build is initialized in `%s`" % Actions::CheckBumpTypeAction::FIRST_BUILD
-  desc "Version is initialized in `%s`" % Actions::CheckBumpTypeAction::FIRST_VERSION
-  desc "First deploy must always be a `%s`" % :major
+  desc "Build is initialized in '#{Actions::CheckBumpTypeAction::FIRST_BUILD}'."
+  desc "Version is initialized in '#{Actions::CheckBumpTypeAction::FIRST_VERSION}'."
+  desc "First deploy must always be a '#{:major}'."
   private_lane :release do |options|
 
     build_configuration_key = options[:build_configuration]
@@ -54,7 +63,7 @@ reflected in `Info.plist` during building."
 
     if Actions::CheckBumpTypeAction.bump_type_allowed? build_configuration_key, options[:bump_type]
       allowed_bump_types = Actions::CheckBumpTypeAction::BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES[build_configuration_key]
-      UI.user_error! "The bump_type specified for this lane can only be one of `%s`" % allowed_bump_types.to_s
+      UI.user_error! "The bump_type specified for this lane can only be one of '#{allowed_bump_types.to_s}'."
     end
 
     desc "Read bundle identifier from project configuration."

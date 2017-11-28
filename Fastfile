@@ -4,22 +4,19 @@ default_platform :ios
 
 platform :ios do
 
-  desc "Run this before doing anything else"
-  desc "Perform project configurations validations."
+  desc "Before doing anything else."
   before_all do
     validate
   end
 
-  desc "After all the steps have completed succesfully, run this."
-  desc "Remove all build artifacts created by fastlane to upload."
+  desc "After all the steps have completed succesfully."
   after_all do |lane|
-    clean_build_artifacts
+    clean
   end
 
-  desc "If there was an error, run this."
-  desc "Remove all build artifacts created by fastlane to upload."
+  desc "If there was an error."
   error do |lane, exception|
-    clean_build_artifacts
+    clean
   end
 
   desc "New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number."

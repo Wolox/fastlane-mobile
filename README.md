@@ -39,17 +39,11 @@ Adds a new device and regenerates the `Provisioning Profile`s to include it.
 ```
 fastlane ios release_qa
 ```
-Run this before doing anything else
+Before doing anything else.
 
-Perform project configurations validations.
+After all the steps have completed succesfully.
 
-After all the steps have completed succesfully, run this.
-
-Remove all build artifacts created by fastlane to upload.
-
-If there was an error, run this.
-
-Remove all build artifacts created by fastlane to upload.
+If there was an error.
 
 New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number.
 ### ios release_internal_appstore
