@@ -85,6 +85,7 @@ reflected in `Info.plist` during building."
       initial_build_number: Actions::CheckBumpTypeAction::FIRST_BUILD
     ).to_i
 
+    desc "Check bump type to use for next build."
     bump_type = check_bump_type(
       build_configuration: build_configuration_key,
       version: current_version_number,
