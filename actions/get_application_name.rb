@@ -14,7 +14,7 @@ module Fastlane
       }.freeze
 
       def self.run(params)
-        APPLICATION_NAMES[params[:build_configuration]]
+        APPLICATION_NAMES[params[:build_configuration]] % params[:project_name]
       end
 
       # Fastlane Action class required functions.
@@ -25,7 +25,8 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, is_string: false)
+          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, is_string: false),
+          FastlaneCore::ConfigItem.new(key: :project_name, optional: true, default_value: ProjectNameAction.default_project_name),
         ]
       end
 

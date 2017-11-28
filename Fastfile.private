@@ -238,7 +238,7 @@ reflected in `Info.plist` during building."
 
     build_configuration_key = options[:build_configuration]
     build_configuration = get_build_configuration(build_configuration: build_configuration_key)
-    app_name = get_application_name(build_configuration: build_configuration_key) % project_name
+    app_name = get_application_name(build_configuration: build_configuration_key)
     skip_itc = build_configuration_key == :test
     match_type = get_match_type(build_configuration: build_configuration_key)
 
