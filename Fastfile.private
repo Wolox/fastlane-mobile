@@ -283,6 +283,28 @@ reflected in `Info.plist` during building."
 
   end
 
+  desc "Refreshes the `Certificates` and `Provisioning Profiles`."
+  private_lane :refresh_certificates do |options|
+
+    build_configuration_key = options[:build_configuration]
+    build_configuration = get_build_configuration(build_configuration: build_configuration_key)
+    match_type = get_match_type(build_configuration: build_configuration_key)
+ 
+    desc "Bundle identifier from xCode project"
+    bundle_identifier = read_project_property(
+      build_configuration: build_configuration,
+      build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
+    )
+
+    desc "Download provisioning profile and certificates if no present."
+    match(
+      app_identifier: bundle_identifier,
+      type: match_type,
+      readonly: true
+    )
+
+  end
+
   desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
   lane :add_single_device do
 

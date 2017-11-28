@@ -99,6 +99,21 @@ Generates the push notifications certificates for the build configurations mappe
 fastlane ios generate_push_certificates_external_appstore
 ```
 Generates the push notifications certificates for the build configurations mapped to `:production`.
+### ios refresh_development_certificates
+```
+fastlane ios refresh_development_certificates
+```
+Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`.
+### ios refresh_internal_appstore_certificates
+```
+fastlane ios refresh_internal_appstore_certificates
+```
+Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`.
+### ios refresh_external_appstore_certificates
+```
+fastlane ios refresh_external_appstore_certificates
+```
+Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`.
 ### ios add_device
 ```
 fastlane ios add_device
