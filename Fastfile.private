@@ -64,23 +64,23 @@ reflected in `Info.plist` during building."
     )
 
     desc "Read current version number from `TestFlight`."
-    current_version_version = latest_testflight_version(
+    current_version_number = latest_testflight_version(
       bundle_id: bundle_identifier
     )
-    if current_version_version.nil?
-      current_version_version = Actions::CheckBumpTypeAction::FIRST_VERSION
+    if current_version_number.nil?
+      current_version_number = Actions::CheckBumpTypeAction::FIRST_VERSION
     end
 
     desc "Read current build number from `TestFlight`."
     current_build_version = latest_testflight_build_number(
       app_identifier: bundle_identifier,
-      version: current_version_version,
+      version: current_version_number,
       initial_build_number: Actions::CheckBumpTypeAction::FIRST_BUILD
     ).to_i
 
     bump_type = check_bump_type(
       build_configuration: build_configuration_key,
-      version: current_version_version,
+      version: current_version_number,
       bump_type: options[:bump_type]
     ).to_s
 
@@ -92,13 +92,13 @@ reflected in `Info.plist` during building."
 
     desc "Set version and build number in Info.plist"
     set_info_plist_version(
-      version_number: current_version_version,
+      version_number: current_version_number,
       build_number: next_build_number.to_s
     )
 
     desc "Update version number in `Info.plist` depending in bump_type."
     if bump_type != "build"
-      current_version_version = increment_version_number(bump_type: bump_type)
+      current_version_number = increment_version_number(bump_type: bump_type)
     end
 
     begin
@@ -126,7 +126,7 @@ reflected in `Info.plist` during building."
       end
 
       desc "Upload the built app to TestFlight."
-      UI.message "Uploading version `#{current_version_version}` build `#{next_build_number}`"
+      UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
       publish_testflight
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
