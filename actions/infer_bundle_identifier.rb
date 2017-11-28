@@ -17,20 +17,15 @@ module Fastlane
         production: "com.%s.%s"
       }.freeze
 
-      # If the application is deployed in Wolox account choose Wolox
-      # as owner, otherwise choose project name.
-      DEPLOYED_IN_WOLOX_ACCOUNT = {
-        test: true,
-        qa: true,
-        appstore: true,
-        production: false
-      }.freeze
+      # Internal account team name to be used in bundle IDs.
+      INTERNAL_ACCOUNT_TEAM_NAME = 'Wolox'
 
       def self.run(params)
         # For legacy projects, just override the return value
         # with the desired bundle identifier.
         bundle_identifier_format = BUNDLE_IDENTIFIERS_FORMAT[params[:build_configuration]]
-        team_name = DEPLOYED_IN_WOLOX_ACCOUNT[params[:build_configuration]] ? "Wolox" : ProjectNameAction.default_project_name
+        uses_internal_account = Actions::UsesInternalAccountAction.run(params[:build_configuration])
+        team_name = uses_internal_account ? INTERNAL_ACCOUNT_TEAM_NAME : ProjectNameAction.default_project_name
         bundle_identifier_format % [team_name, ProjectNameAction.default_project_name]
       end
 
