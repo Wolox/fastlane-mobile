@@ -43,7 +43,7 @@ platform :ios do
 
   desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`."
   lane :test do
-    run_tests build_configuration_key: :test
+    run_tests build_configuration: :test
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`."
@@ -59,7 +59,7 @@ platform :ios do
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:production`."
   lane :create_external_appstore_app do
-    create_app build_configuration_key: :production
+    create_app build_configuration: :production
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`."
