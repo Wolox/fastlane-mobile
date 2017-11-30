@@ -111,7 +111,7 @@ reflected in `Info.plist` during building."
 
     begin
       desc "Build"
-      build_app(
+      build_application(
         build_configuration: build_configuration_key
       )
 
@@ -146,7 +146,7 @@ reflected in `Info.plist` during building."
   end
 
   desc "Executes the tests for the project using `scan`."
-  private_lane :run_tests do |options|
+  private_lane :run_application_tests do |options|
 
     build_configuration_key = options[:build_configuration]
     build_configuration = get_build_configuration(build_configuration: build_configuration_key)
@@ -202,7 +202,7 @@ reflected in `Info.plist` during building."
   end
 
   desc "Builds the app creating the `.ipa` and `.dsym` files"
-  private_lane :build_app do |options|
+  private_lane :build_application do |options|
 
     build_configuration_key = options[:build_configuration]
     build_configuration = get_build_configuration(build_configuration: build_configuration_key)
