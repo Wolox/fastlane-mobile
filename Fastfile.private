@@ -18,7 +18,7 @@ platform :ios do
         build_configuration: key, 
         build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
       )
-      UI.message "Validating bundle identifier for '#{key}'. Expected: '#{value}', found: '#{found_bundle_identifier}'."
+      UI.message "Validating bundle identifier for '#{key}'. Expected any of: '#{value}', found: '#{found_bundle_identifier}'."
       unless value.include?(found_bundle_identifier)
         UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{value}'."
       end
