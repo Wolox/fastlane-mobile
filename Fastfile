@@ -75,18 +75,18 @@ platform :ios do
     generate_push_certificates build_configuration: :production
   end
 
-  desc "Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`."
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`."
   lane :refresh_development_certificates do
     refresh_certificates build_configuration: :test
     refresh_certificates build_configuration: :qa
   end
 
-  desc "Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`."
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`."
   lane :refresh_internal_appstore_certificates do
     refresh_certificates build_configuration: :appstore
   end
 
-  desc "Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
   lane :refresh_external_appstore_certificates do
     refresh_certificates build_configuration: :production
   end

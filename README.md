@@ -103,17 +103,17 @@ Generates the push notifications certificates for the build configurations mappe
 ```
 fastlane ios refresh_development_certificates
 ```
-Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`.
+Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`.
 ### ios refresh_internal_appstore_certificates
 ```
 fastlane ios refresh_internal_appstore_certificates
 ```
-Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`.
+Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`.
 ### ios refresh_external_appstore_certificates
 ```
 fastlane ios refresh_external_appstore_certificates
 ```
-Refreshes the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`.
+Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`.
 ### ios add_device
 ```
 fastlane ios add_device
