@@ -15,7 +15,7 @@ module Fastlane
         if app.nil?
           UI.abort_with_message! "The application with bundle ID '#{params[:bundle_id]}' is not yet created in iTunes Connect."
         end
-        app.all_build_train_numbers.max
+        app.all_build_train_numbers.max || params[:initial_version_number]
       end
 
       # Fastlane Action class required functions.
@@ -27,6 +27,7 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :bundle_id, optional: false),
+          FastlaneCore::ConfigItem.new(key: :initial_version_number, optional: false),
         ]
       end
 

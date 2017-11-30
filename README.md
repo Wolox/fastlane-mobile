@@ -30,20 +30,40 @@ xcode-select --install
 
 # Available Actions
 ## iOS
-### ios release_appstore
+### ios add_single_device
 ```
-fastlane ios release_appstore
+fastlane ios add_single_device
 ```
-New release to `TestFlight` for Appstore.
-
-Parameters:
-
-- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
+Adds a new device and regenerates the `Provisioning Profile`s to include it.
 ### ios release_qa
 ```
 fastlane ios release_qa
 ```
-New release to `TestFlight` for QA(Alpha). This lane will never update the version, only the build number.
+Before doing anything else.
+
+After all the steps have completed succesfully.
+
+If there was an error.
+
+New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number.
+### ios release_internal_appstore
+```
+fastlane ios release_internal_appstore
+```
+New release to iTunes Connect for AppStore (Release) in Wolox account.
+
+Parameters:
+
+- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
+### ios release_external_appstore
+```
+fastlane ios release_external_appstore
+```
+New release to iTunes Connect for AppStore (Production) in third party account.
+
+Parameters:
+
+- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
 ### ios test
 ```
 fastlane ios test
@@ -54,21 +74,31 @@ Executes the tests for the project using `scan`. This lane uses the configuratio
 fastlane ios create_development_app
 ```
 Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`.
-### ios create_appstore_app
+### ios create_internal_appstore_app
 ```
-fastlane ios create_appstore_app
+fastlane ios create_internal_appstore_app
 ```
 Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`.
+### ios create_external_appstore_app
+```
+fastlane ios create_external_appstore_app
+```
+Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:production`.
 ### ios generate_push_certificates_development
 ```
 fastlane ios generate_push_certificates_development
 ```
 Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`.
-### ios generate_push_certificates_appstore
+### ios generate_push_certificates_internal_appstore
 ```
-fastlane ios generate_push_certificates_appstore
+fastlane ios generate_push_certificates_internal_appstore
 ```
 Generates the push notifications certificates for the build configurations mapped to `:appstore`.
+### ios generate_push_certificates_external_appstore
+```
+fastlane ios generate_push_certificates_external_appstore
+```
+Generates the push notifications certificates for the build configurations mapped to `:production`.
 ### ios add_device
 ```
 fastlane ios add_device
