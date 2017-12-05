@@ -75,6 +75,22 @@ platform :ios do
     generate_push_certificates build_configuration: :production
   end
 
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`."
+  lane :refresh_development_certificates do
+    refresh_certificates build_configuration: :test
+    refresh_certificates build_configuration: :qa
+  end
+
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`."
+  lane :refresh_internal_appstore_certificates do
+    refresh_certificates build_configuration: :appstore
+  end
+
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
+  lane :refresh_external_appstore_certificates do
+    refresh_certificates build_configuration: :production
+  end
+
   desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
   lane :add_device do
     add_single_device
