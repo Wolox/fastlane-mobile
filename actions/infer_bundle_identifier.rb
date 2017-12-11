@@ -24,7 +24,7 @@ module Fastlane
         # For legacy projects, just override the return value
         # with the desired bundle identifier.
         bundle_identifier_format = BUNDLE_IDENTIFIERS_FORMAT[params[:build_configuration]]
-        uses_internal_account = Actions::UsesInternalAccountAction.run(params[:build_configuration])
+        uses_internal_account = Actions::UsesInternalAccountAction.run(build_configuration: params[:build_configuration])
         team_name = uses_internal_account ? INTERNAL_ACCOUNT_TEAM_NAME : ProjectNameAction.default_project_name
         bundle_identifier_format % [team_name, ProjectNameAction.default_project_name]
       end
