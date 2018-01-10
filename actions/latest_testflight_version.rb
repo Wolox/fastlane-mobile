@@ -15,7 +15,10 @@ module Fastlane
         if app.nil?
           UI.abort_with_message! "The application with bundle ID '#{params[:bundle_id]}' is not yet created in iTunes Connect."
         end
-        app.all_build_train_numbers.max || params[:initial_version_number]
+        # Converts array of strings with versions to latest version
+        app.all_build_train_numbers
+          .map{ |v| v.split(".").map{ |i| i.to_i } }          # ["1.2.1", "1.2.2"] => [[1,2,1], [1,2,2]]
+          .max.join(".") || params[:initial_version_number]   # Comparator of arrays checks values from left to right
       end
 
       # Fastlane Action class required functions.
