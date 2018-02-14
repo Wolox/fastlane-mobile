@@ -2,10 +2,10 @@ module Fastlane
   module Actions
     class GetBuildConfigurationAction < Action
 
-      # Given a build configuration action
+      # Given an environment
       # this script returns the build configuration associated to it.
 
-      # Default build configuration by action
+      # Default build configuration by environment
       BUILD_CONFIGURATIONS = {
         test: "Debug",
         qa: "Alpha",
@@ -14,7 +14,7 @@ module Fastlane
       }.freeze
 
       def self.run(params)
-        BUILD_CONFIGURATIONS[params[:build_configuration]]
+        BUILD_CONFIGURATIONS[params[:environment]]
       end
 
       # Fastlane Action class required functions.
@@ -25,7 +25,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, is_string: false)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol)
         ]
       end
 

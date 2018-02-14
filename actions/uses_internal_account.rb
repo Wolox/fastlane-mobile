@@ -2,7 +2,7 @@ module Fastlane
   module Actions
     class UsesInternalAccountAction < Action
 
-      # Given a build configuration action
+      # Given an environment
       # this script returns if the application should use internal account.
 
       # Whether application uses or not internal account.
@@ -14,7 +14,7 @@ module Fastlane
       }.freeze
 
       def self.run(params)
-        USES_INTERNAL_ACCOUNT[params[:build_configuration]]
+        USES_INTERNAL_ACCOUNT[params[:environment]]
       end
 
       # Fastlane Action class required functions.
@@ -25,7 +25,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, is_string: false)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol)
         ]
       end
 

@@ -2,10 +2,10 @@ module Fastlane
   module Actions
     class GetMatchTypeAction < Action
 
-      # Given a build configuration
+      # Given an environment
       # this script returns the match type associated to it.
 
-      # Default match types by build configuration
+      # Default match types by environment
       MATCH_TYPES = {
         test: "development",
         qa: "appstore",
@@ -14,7 +14,7 @@ module Fastlane
       }.freeze
 
       def self.run(params)
-        MATCH_TYPES[params[:build_configuration]]
+        MATCH_TYPES[params[:environment]]
       end
 
       # Fastlane Action class required functions.
@@ -25,7 +25,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, is_string: false)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol)
         ]
       end
 
