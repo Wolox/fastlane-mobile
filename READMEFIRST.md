@@ -37,7 +37,10 @@ In any env file you can set up the following parameters:
 APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
-BUILD_CONFIGURATION="your xcode project\'s build configuration for this environment"
+BUILD_CONFIGURATION="your xcode project's build configuration for this environment"
+PROJECT_NAME="The project's plain name" [optional]
+APP_NAME_FORMAT="The format the Application's name must have in relation to the PROJECT_NAME for the environment" [optional] [overriden by APP_FULL_NAME] [example: "%s Dev" == "PROJECT_NAME_VALUE Dev"]
+APP_FULL_NAME="The Application's name for the environment" [optional: APP_NAME_FORMAT and PROJECT_NAME will be used instead]
 ```
 
 For any further configuration, you will have to modify the `Fastfile`s or the custom actions.
