@@ -91,7 +91,7 @@ platform :ios do
     refresh_certificates environment: :production
   end
 
-  desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
+  desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
   lane :add_device do
     add_single_device
   end

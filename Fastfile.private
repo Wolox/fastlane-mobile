@@ -320,7 +320,7 @@ reflected in `Info.plist` during building."
 
   end
 
-  desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
+  desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
   lane :add_single_device do
 
     # Devices are only important for development
