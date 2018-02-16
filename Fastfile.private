@@ -61,6 +61,7 @@ reflected in `Info.plist` during building."
 
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
+    credentials = get_credentials(environment: environment)
 
     if Actions::CheckBumpTypeAction.bump_type_allowed? environment, options[:bump_type]
       allowed_bump_types = Actions::CheckBumpTypeAction::ENVIRONMENT_ALLOWED_BUMP_TYPES[environment]
@@ -76,14 +77,18 @@ reflected in `Info.plist` during building."
     desc "Read current version number from `TestFlight`."
     current_version_number = latest_testflight_version(
       bundle_id: bundle_identifier,
-      initial_version_number: Actions::CheckBumpTypeAction::FIRST_VERSION
+      initial_version_number: Actions::CheckBumpTypeAction::FIRST_VERSION,
+      username: credentials[:account],
+      team_id: credentials[:itc_team]
     )
 
     desc "Read current build number from `TestFlight`."
     current_build_number = latest_testflight_build_number(
       app_identifier: bundle_identifier,
       version: current_version_number,
-      initial_build_number: Actions::CheckBumpTypeAction::FIRST_BUILD
+      initial_build_number: Actions::CheckBumpTypeAction::FIRST_BUILD,
+      username: credentials[:account],
+      team_id: credentials[:itc_team]
     ).to_i
 
     desc "Check bump type to use for next build."
@@ -136,7 +141,7 @@ reflected in `Info.plist` during building."
 
       desc "Upload the built app to TestFlight."
       UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
-      publish_testflight
+      publish_testflight(environment: environment)
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
       set_info_plist_version(
@@ -170,6 +175,8 @@ reflected in `Info.plist` during building."
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     match_type = get_match_type(environment: environment)
+    credentials = get_credentials(environment: environment)
+
     is_development = match_type == Actions::GetMatchTypeAction::MATCH_TYPES[:test]
     output_path = "#{environment.to_s}_push_certificates"
 
@@ -187,7 +194,7 @@ reflected in `Info.plist` during building."
     end
 
     desc "Password for current user from keychain"
-    user = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
+    user = credentials[:account]
     keychain_entry = CredentialsManager::AccountManager.new(user: user)
     p12_password = keychain_entry.password
 
@@ -197,7 +204,9 @@ reflected in `Info.plist` during building."
       app_identifier: bundle_identifier,
       force: false,
       p12_password: p12_password,
-      output_path: output_path
+      output_path: output_path,
+      username: credentials[:account],
+      team_id: credentials[:team]
     )
 
   end
@@ -221,6 +230,7 @@ reflected in `Info.plist` during building."
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
       include_bitcode: false
     )
+    ### Check if external_team_id needed
 
   end
 
@@ -232,8 +242,10 @@ reflected in `Info.plist` during building."
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     app_name = get_application_name(environment: environment)
-    skip_itc = environment == :test
     match_type = get_match_type(environment: environment)
+    credentials = get_credentials(environment: environment)
+
+    skip_itc = environment == :test
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
@@ -254,22 +266,28 @@ reflected in `Info.plist` during building."
     produce(
       app_name: app_name,
       app_identifier: bundle_identifier,
-      skip_itc: skip_itc
+      skip_itc: skip_itc,
+      username: credentials[:account],
+      team_id: credentials[:team],
+      itc_team_id: credentials[:itc_team]
     )
+    ### Make sure apple_id is not necessary, for deliver or something like that
 
     desc "Generate provisioning profile if not present"
     match_result = match(
       app_identifier: bundle_identifier,
       type: match_type,
       readonly: false,
-      clone_branch_directly: true
+      clone_branch_directly: true,
+      username: credentials[:account],
+      team_id: credentials[:team]
     )
 
     desc "Update project signing identity and provisioning profile"
     set_project_signing(
       build_configuration: build_configuration,
       provisioning_profile: match_result[bundle_identifier],
-      development_team: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+      development_team: get_credentials(environment: environment)[:team],
     )
 
     UI.success "Project configured successfully. Please commit your changes."
@@ -282,6 +300,7 @@ reflected in `Info.plist` during building."
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     match_type = get_match_type(environment: environment)
+    credentials = get_credentials(environment: environment)
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
@@ -294,7 +313,9 @@ reflected in `Info.plist` during building."
       app_identifier: bundle_identifier,
       type: match_type,
       readonly: true,
-      clone_branch_directly: true
+      clone_branch_directly: true,
+      username: credentials[:account],
+      team_id: credentials[:team]
     )
 
   end
@@ -302,19 +323,26 @@ reflected in `Info.plist` during building."
   desc "Adds a new device and regenerates the `Provisioning Profile`s to include it."
   lane :add_single_device do
 
+    # Devices are only important for development
+    credentials = get_credentials(environment: :test)
+
     desc "Ask the user for device name and device UDID"
     device_name = prompt(text: 'Enter the device name: ')
     device_udid = prompt(text: 'Enter the device UDID: ')
 
     desc "Register new device."
     register_devices(
-      devices: {device_name => device_udid}
+      devices: {device_name => device_udid},
+      username: credentials[:account],
+      team_id: credentials[:team]
     )
 
     desc "Refresh provisioning profiles adding the new device."
     match(
       force_for_new_devices: true,
-      clone_branch_directly: true
+      clone_branch_directly: true,
+      username: credentials[:account],
+      team_id: credentials[:team]
     )
 
   end
@@ -322,8 +350,12 @@ reflected in `Info.plist` during building."
   desc "Publish to testflight"
   private_lane :publish_testflight do |options|
 
+    credentials = get_credentials(environment: options[:environment])
+
     pilot(
-      skip_waiting_for_build_processing: true
+      skip_waiting_for_build_processing: true,
+      username: credentials[:account],
+      team_id: credentials[:itc_team_id]
     )
 
   end
