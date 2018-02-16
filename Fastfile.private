@@ -8,7 +8,8 @@ platform :ios do
     UI.message "Running lane for project: '#{project_name}'."
 
     desc "Validate the configured bundle identifiers match the expected ones."
-    build_configurations = Actions::GetBuildConfigurationAction::BUILD_CONFIGURATIONS
+    build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations
+
     expected_bundle_identifiers = Hash[build_configurations.values.uniq.map { |each| [each, []] }]
     build_configurations.each do |key, value|
       expected_bundle_identifiers[value].push(infer_bundle_identifier(environment: key))
@@ -260,7 +261,8 @@ reflected in `Info.plist` during building."
     match_result = match(
       app_identifier: bundle_identifier,
       type: match_type,
-      readonly: false
+      readonly: false,
+      clone_branch_directly: true
     )
 
     desc "Update project signing identity and provisioning profile"
@@ -291,7 +293,8 @@ reflected in `Info.plist` during building."
     match(
       app_identifier: bundle_identifier,
       type: match_type,
-      readonly: true
+      readonly: true,
+      clone_branch_directly: true
     )
 
   end
@@ -310,7 +313,8 @@ reflected in `Info.plist` during building."
 
     desc "Refresh provisioning profiles adding the new device."
     match(
-      force_for_new_devices: true
+      force_for_new_devices: true,
+      clone_branch_directly: true
     )
 
   end

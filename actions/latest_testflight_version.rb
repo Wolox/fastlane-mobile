@@ -1,3 +1,5 @@
+require 'spaceship'
+
 module Fastlane
   module Actions
     class LatestTestflightVersionAction < Action
