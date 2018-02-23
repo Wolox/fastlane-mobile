@@ -31,7 +31,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :project, optional: true, default_value: ProjectNameAction.default_project_filename),
           FastlaneCore::ConfigItem.new(key: :scheme, optional: true, default_value: ProjectNameAction.default_project_name),
           FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false),
-          FastlaneCore::ConfigItem.new(key: :build_setting, optional: false),
+          FastlaneCore::ConfigItem.new(key: :build_setting, optional: false)
         ]
       end
 

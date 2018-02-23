@@ -38,7 +38,8 @@ APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
 BUILD_CONFIGURATION="your xcode project's build configuration for this environment" [optional: default in custom action]
-PROJECT_NAME="The project's plain name" [optional: The xcodeproj's name by default]
+PROJECT_EXTENSION=".xcodeproj or .xcworkspace" [optional: ".xcodeproj" by default]
+PROJECT_NAME="The project's plain name" [optional: The xcode project/workspace's name by default. There must be only one with PROJECT_EXTENSION for it to work.]
 APP_NAME_FORMAT="The format the Application's name must have in relation to the PROJECT_NAME for the environment" [optional: default in custom action] [overriden by APP_FULL_NAME] [example: "%s Dev" == "PROJECT_NAME Dev"]
 APP_FULL_NAME="The Application's name for the environment" [optional: APP_NAME_FORMAT and PROJECT_NAME will be used instead]
 TEAM_NAME="Your team's name used for creating the bundle id" [optional: PROJECT_NAME by default]

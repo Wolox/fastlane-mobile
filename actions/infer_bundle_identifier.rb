@@ -5,6 +5,7 @@ module Fastlane
       # Given an environment
       # this script builds the corresponding bundle identifier
       # that should be used.
+      # The bundle identifiers will have no whitespaces.
 
       # This is useful to validate the bundle identifiers chosen
       # during the kickoff are correct.
@@ -29,7 +30,7 @@ module Fastlane
         project_name = ProjectNameAction.run(environment: environment)
         team_name = environment_info[TEAM_NAME_KEY] || project_name
         bundle_identifier_format = environment_info[BUNDLE_ID_FORMAT_KEY] || BUNDLE_IDENTIFIERS_FORMAT[environment]
-        bundle_id = environment_info[BUNDLE_ID_KEY] || bundle_identifier_format % [team_name, project_name] #TODO: Take out spaces
+        bundle_id = (environment_info[BUNDLE_ID_KEY] || bundle_identifier_format % [team_name, project_name]).gsub(/\s+/, "")
 
         (environment_info[BUNDLE_ID_DOWNCASED_KEY]) ? bundle_id.downcase : bundle_id
       end

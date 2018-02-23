@@ -19,7 +19,7 @@ module Fastlane
 
       def self.run(params)
         # specific file has priority over general file around key collisions
-        Dotenv.load(OVERALL_ENVIRONMENT_FILE, ENVIRONMENTS_FILES[params[:environment]])
+        params[:environment] ? Dotenv.load(OVERALL_ENVIRONMENT_FILE, ENVIRONMENTS_FILES[params[:environment]]) : Dotenv.load(OVERALL_ENVIRONMENT_FILE)
       end
 
       # Fastlane Action class required functions.
@@ -30,7 +30,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: true, type: Symbol)
         ]
       end
 
