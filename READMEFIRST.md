@@ -3,11 +3,12 @@ fastlane-mobile
 
 Fastlane scripts for deploying and managing Apple certificates in an iOS project.
 
-Tested in fastlane 2.81.0.
+Tested in fastlane `2.81.0`.
 
 ## Scripts
 
 You can get detailed information in fastlane [README](./README.md).
+Remember to run all fastlane commands preceeded by `bundle exec`.`
 
 ## Environments
 
@@ -37,15 +38,21 @@ In any env file you can set up the following parameters:
 APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
+
 BUILD_CONFIGURATION="your xcode project's build configuration for this environment" [optional: default in custom action]
+
 PROJECT_EXTENSION=".xcodeproj or .xcworkspace" [optional: ".xcodeproj" by default]
 PROJECT_NAME="The project's plain name" [optional: The xcode project/workspace's name by default. There must be only one with PROJECT_EXTENSION for it to work.]
+
 APP_NAME_FORMAT="The format the Application's name must have in relation to the PROJECT_NAME for the environment" [optional: default in custom action] [overriden by APP_FULL_NAME] [example: "%s Dev" == "PROJECT_NAME Dev"]
 APP_FULL_NAME="The Application's name for the environment" [optional: APP_NAME_FORMAT and PROJECT_NAME will be used instead]
+
 TEAM_NAME="Your team's name used for creating the bundle id" [optional: PROJECT_NAME by default]
 BUNDLE_ID_FORMAT="The format the bundle id must have in relation to the team's name and the project name" [optional: default in custom action] [overriden by BUNDLE_ID] [example: "com.%s.%s.qa" == "com.TEAM_NAME.PROJECT_NAME.qa" or "com.%s.MyProject.dev" == "com.TEAM_NAME.MyProject.dev"]
 BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcased" [optional: false by default] [overriden by BUNDLE_ID]
 BUNDLE_ID="The bundle id of the app for this environment" [optional: TEAM_NAME and BUNDLE_ID_FORMAT used instead]
+
+PROJECT_XCCONFIG_PATH="The relative path to base directory where the xcconfig files are, in relation to APP_NAME and BUILD_CONFIGURATION" [optional: default in custom action] [example: "%s/Configuration Files/%s.xcconfig" == "APP_NAME/Configuration Files/BUILD_CONFIGURATION.xcconfig" or "my/Custom/Path/File.xcconfig" == "my/Custom/Path/File.xcconfig"]
 ```
 
 For any further configuration, you will have to modify the `Fastfile`s or the custom actions.

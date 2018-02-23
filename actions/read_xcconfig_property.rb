@@ -8,11 +8,14 @@ module Fastlane
       # This is useful in case sensitive data stored in xcconfig files
       # is needed to be accessed from a fastlane script.
 
+      PROJECT_XCCONFIG_PATH_FORMAT_KEY = "PROJECT_XCCONFIG_PATH"
+
       # Default xcconfig files path.
-      PROJECT_XCCONFIG_PATH = "%s/ConfigurationFiles/%s.xcconfig"
+      DEFAULT_PROJECT_XCCONFIG_PATH = "%s/ConfigurationFiles/%s.xcconfig"
 
       def self.run(params)
-        xcconfig_path = PROJECT_XCCONFIG_PATH % [params[:project_name], params[:build_configuration]]
+        xcconfig_path_format = Actions::GetEnvironmentInfoAction.run({})[PROJECT_XCCONFIG_PATH_FORMAT_KEY] || DEFAULT_PROJECT_XCCONFIG_PATH
+        xcconfig_path = xcconfig_path_format % [params[:project_name], params[:build_configuration]]
 
         if !File.exist?(xcconfig_path)
           UI.important "Configuration file at path #{xcconfig_path} not found. Please make sure the file exists."
