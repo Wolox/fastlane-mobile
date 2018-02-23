@@ -9,6 +9,11 @@ module Fastlane
       # This is useful to validate the bundle identifiers chosen
       # during the kickoff are correct.
 
+      TEAM_NAME_KEY = "TEAM_NAME".freeze
+      BUNDLE_ID_FORMAT_KEY = "BUNDLE_ID_FORMAT".freeze
+      BUNDLE_ID_KEY = "BUNDLE_ID".freeze
+      BUNDLE_ID_DOWNCASED_KEY = "BUNDLE_ID_DOWNCASED".freeze
+
       # Format for bundle identifiers by environment.
       BUNDLE_IDENTIFIERS_FORMAT = {
         test: "com.%s.%s.debug",
@@ -17,16 +22,16 @@ module Fastlane
         production: "com.%s.%s"
       }.freeze
 
-      # Internal account team name to be used in bundle IDs.
-      INTERNAL_ACCOUNT_TEAM_NAME = 'Wolox'
-
       def self.run(params)
-        # For legacy projects, just override the return value
-        # with the desired bundle identifier.
-        bundle_identifier_format = BUNDLE_IDENTIFIERS_FORMAT[params[:environment]]
-        uses_internal_account = Actions::UsesInternalAccountAction.run(environment: params[:environment])
-        team_name = uses_internal_account ? INTERNAL_ACCOUNT_TEAM_NAME : ProjectNameAction.default_project_name
-        bundle_identifier_format % [team_name, ProjectNameAction.default_project_name]
+        environment = params[:environment]
+        environment_info = Actions::GetEnvironmentInfoAction.run(environment: params[:environment])
+
+        project_name = ProjectNameAction.run(environment: environment)
+        team_name = environment_info[TEAM_NAME_KEY] || project_name
+        bundle_identifier_format = environment_info[BUNDLE_ID_FORMAT_KEY] || BUNDLE_IDENTIFIERS_FORMAT[environment]
+        bundle_id = environment_info[BUNDLE_ID_KEY] || bundle_identifier_format % [team_name, project_name] #TODO: Take out spaces
+
+        (environment_info[BUNDLE_ID_DOWNCASED_KEY]) ? bundle_id.downcase : bundle_id
       end
 
       # Fastlane Action class required functions.

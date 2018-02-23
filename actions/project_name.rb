@@ -5,14 +5,16 @@ module Fastlane
     class ProjectNameAction < Action
 
       PROJECT_EXTENSION = ".xcodeproj".freeze
+      PROJECT_NAME_KEY = "PROJECT_NAME".freeze
 
       # This script returns the application name
       # if there is a scheme that matches the project name.
-      # Otherwise, it assumes the project name should be specified 
+      # Otherwise, it assumes the project name should be specified
       # by the user and fails.
 
       def self.run(params)
-        default_project_name
+        default = default_project_name
+        params[:environment] ? Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[PROJECT_NAME_KEY] || default : default
       end
 
       # Fastlane Action class required functions.
@@ -23,14 +25,14 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :project_name, optional: false)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: true, type: Symbol)
         ]
       end
 
       # Available options default_value helpers
 
       # In case there is a single '.xcodeproj' in the default directory
-      # it can be automatically inferred by the script 
+      # it can be automatically inferred by the script
       # if no parameter project is received.
       def self.default_project
         projects = Dir.entries('.').select { |each| File.extname(each) == PROJECT_EXTENSION }
@@ -44,7 +46,7 @@ module Fastlane
       end
 
       # In case there is a scheme matching project's name
-      # it can be automatically inferred by the script 
+      # it can be automatically inferred by the script
       # if no parameter scheme is received.
       def self.matching_scheme
         target = Xcodeproj::Project.open(default_project)

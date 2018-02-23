@@ -17,10 +17,10 @@ These scripts handle 4 environments:
 - appstore: intended for user testing
 - production: intended for users
 
-If you want to handle any other environment, you will have to add it to all fastlane custom actions.
+If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions).
 
 If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones
-and don't use the lanes associated with those extra ones.
+and don't use the fastlane lanes associated with those extra ones.
 
 ## Configuration
 
@@ -37,10 +37,14 @@ In any env file you can set up the following parameters:
 APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
-BUILD_CONFIGURATION="your xcode project's build configuration for this environment"
-PROJECT_NAME="The project's plain name" [optional]
-APP_NAME_FORMAT="The format the Application's name must have in relation to the PROJECT_NAME for the environment" [optional] [overriden by APP_FULL_NAME] [example: "%s Dev" == "PROJECT_NAME_VALUE Dev"]
+BUILD_CONFIGURATION="your xcode project's build configuration for this environment" [optional: default in custom action]
+PROJECT_NAME="The project's plain name" [optional: The xcodeproj's name by default]
+APP_NAME_FORMAT="The format the Application's name must have in relation to the PROJECT_NAME for the environment" [optional: default in custom action] [overriden by APP_FULL_NAME] [example: "%s Dev" == "PROJECT_NAME Dev"]
 APP_FULL_NAME="The Application's name for the environment" [optional: APP_NAME_FORMAT and PROJECT_NAME will be used instead]
+TEAM_NAME="Your team's name used for creating the bundle id" [optional: PROJECT_NAME by default]
+BUNDLE_ID_FORMAT="The format the bundle id must have in relation to the team's name and the project name" [optional: default in custom action] [overriden by BUNDLE_ID] [example: "com.%s.%s.qa" == "com.TEAM_NAME.PROJECT_NAME.qa" or "com.%s.MyProject.dev" == "com.TEAM_NAME.MyProject.dev"]
+BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcased" [optional: false by default] [overriden by BUNDLE_ID]
+BUNDLE_ID="The bundle id of the app for this environment" [optional: TEAM_NAME and BUNDLE_ID_FORMAT used instead]
 ```
 
 For any further configuration, you will have to modify the `Fastfile`s or the custom actions.
