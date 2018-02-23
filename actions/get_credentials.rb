@@ -7,13 +7,13 @@ module Fastlane
       # the developer portal team id (:team)
       # and the itunnes connect team id (:itc_team) associated to it.
 
-      APPLE_ACCOUNT = "APPLE_ID".freeze
+      APPLE_ACCOUNT_ENV_KEY = "APPLE_ID".freeze
       TEAM_ENV_KEY = "TEAM_ID".freeze
       ITC_TEAM_ENV_KEY = "ITC_TEAM_ID".freeze
 
       def self.run(params)
         {
-          account: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[APPLE_ACCOUNT],
+          account: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[APPLE_ACCOUNT_ENV_KEY],
           team: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[TEAM_ENV_KEY],
           itc_team: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[ITC_TEAM_ENV_KEY]
         }
