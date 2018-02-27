@@ -290,6 +290,7 @@ reflected in `Info.plist` during building."
 
     desc "Update project signing identity and provisioning profile"
     set_project_signing(
+      environment: environment,
       build_configuration: build_configuration,
       provisioning_profile: match_result[bundle_identifier],
       development_team: get_credentials(environment: environment)[:team],
