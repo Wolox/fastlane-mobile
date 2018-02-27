@@ -38,6 +38,8 @@ In any env file you can set up the following parameters:
 APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
+GIT_URL="URL pointing to match certificates repository"
+GIT_BRANCH="Branch in GIT_URL repository to take the signing information from"
 
 BUILD_CONFIGURATION="your xcode project's build configuration for this environment"
       [optional: default in custom action]

@@ -248,6 +248,7 @@ reflected in `Info.plist` during building."
     app_name = get_application_name(environment: environment)
     match_type = get_match_type(environment: environment)
     credentials = get_credentials(environment: environment)
+    certificates_info = get_certificates_info(environment: environment)
 
     skip_itc = environment == :test
 
@@ -285,7 +286,9 @@ reflected in `Info.plist` during building."
       readonly: false,
       clone_branch_directly: true,
       username: credentials[:account],
-      team_id: credentials[:team]
+      team_id: credentials[:team],
+      git_url: certificates_info[:url],
+      git_branch: certificates_info[:branch]
     )
 
     desc "Update project signing identity and provisioning profile"
@@ -307,6 +310,7 @@ reflected in `Info.plist` during building."
     build_configuration = get_build_configuration(environment: environment)
     match_type = get_match_type(environment: environment)
     credentials = get_credentials(environment: environment)
+    certificates_info = get_certificates_info(environment: environment)
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
@@ -322,7 +326,9 @@ reflected in `Info.plist` during building."
       readonly: true,
       clone_branch_directly: true,
       username: credentials[:account],
-      team_id: credentials[:team]
+      team_id: credentials[:team],
+      git_url: certificates_info[:url],
+      git_branch: certificates_info[:branch]
     )
 
   end
@@ -332,6 +338,7 @@ reflected in `Info.plist` during building."
 
     # Devices are only important for development
     credentials = get_credentials(environment: :test)
+    certificates_info = get_certificates_info(environment: :test)
 
     desc "Ask the user for device name and device UDID"
     device_name = prompt(text: 'Enter the device name: ')
@@ -349,7 +356,9 @@ reflected in `Info.plist` during building."
       force_for_new_devices: true,
       clone_branch_directly: true,
       username: credentials[:account],
-      team_id: credentials[:team]
+      team_id: credentials[:team],
+      git_url: certificates_info[:url],
+      git_branch: certificates_info[:branch]
     )
 
   end
