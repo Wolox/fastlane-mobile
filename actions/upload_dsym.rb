@@ -38,7 +38,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :project_name, optional: true, default_value: ProjectNameAction.default_project_name),
+          FastlaneCore::ConfigItem.new(key: :project_name, optional: true, default_value: ProjectNameAction.run({})),
           FastlaneCore::ConfigItem.new(key: :access_token, optional: false),
           FastlaneCore::ConfigItem.new(key: :version, optional: false),
           FastlaneCore::ConfigItem.new(key: :bundle_identifier, optional: false),

@@ -24,7 +24,7 @@ module Fastlane
         # Set provisioning profile in xCode
         Actions::UpdateProjectPropertyAction.run(
           project: params[:project],
-          scheme: scheme,
+          environment: environment,
           build_configuration: params[:build_configuration],
           build_setting: PROVISIONING_PROFILE_SPECIFIER,
           build_setting_value: params[:provisioning_profile]
@@ -33,7 +33,7 @@ module Fastlane
         # Set development team in xCode
         Actions::UpdateProjectPropertyAction.run(
           project: params[:project],
-          scheme: scheme,
+          environment: environment,
           build_configuration: params[:build_configuration],
           build_setting: DEVELOPMENT_TEAM,
           build_setting_value: params[:development_team]
