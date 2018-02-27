@@ -35,7 +35,6 @@ module Fastlane
       # it can be automatically inferred by the script
       # if no parameter project is received.
       def self.default_project
-        project_extension = project_extension
         projects = Dir.entries('.').select { |each| File.extname(each) == project_extension }
         if projects.length == 0
           UI.abort_with_message! "No projects with extension '#{project_extension}' found in root directory."
@@ -50,10 +49,9 @@ module Fastlane
       # it can be automatically inferred by the script
       # if no parameter scheme is received.
       def self.matching_scheme
-        default_proj = default_project(project_extension)
-        target = Xcodeproj::Project.open(default_proj)
+        target = Xcodeproj::Project.open(default_project)
           .targets
-          .find { |each| each.name == File.basename(default_proj, File.extname(default_proj)) }
+          .find { |each| each.name == File.basename(default_project, File.extname(default_project)) }
         if target.nil?
           UI.abort_with_message! "No target matching project name '#{default_proj}' found."
         end
@@ -62,12 +60,16 @@ module Fastlane
 
       # Just a wrapper for the matching scheme function.
       def self.default_project_name
-        matching_scheme(project_extension)
+        matching_scheme
       end
 
       # Name of the project file.
       def self.default_project_filename
-        matching_scheme(project_extension) + project_extension
+        matching_scheme + project_extension
+      end
+
+      def self.project_filename
+        run({}) + project_extension
       end
 
       def self.project_extension

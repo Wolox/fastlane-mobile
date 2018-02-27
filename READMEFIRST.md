@@ -64,9 +64,13 @@ BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcase
 PROJECT_XCCONFIG_PATH="The relative path to base directory where the xcconfig files are, in relation to APP_NAME and BUILD_CONFIGURATION"
       [optional: default in custom action]
       [example: "%s/Configuration Files/%s.xcconfig" == "APP_NAME/Configuration Files/BUILD_CONFIGURATION.xcconfig" or "my/Custom/Path/File.xcconfig" == "my/Custom/Path/File.xcconfig"]
+
+SCHEME="The scheme to use for building the app"
+      [optional: PROJECT_NAME by default]
 ```
 
 For any further configuration, you will have to modify the `Fastfile`s or the custom actions.
+For example, if you want to have the script take care of the changelog and distributing the build, you have to change `skip_waiting_for_build_processing` to false for pilot in the `Fastfile`.
 
 ## Actions
 

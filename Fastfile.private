@@ -10,19 +10,21 @@ platform :ios do
     desc "Validate the configured bundle identifiers match the expected ones."
     build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations
 
-    expected_bundle_identifiers = Hash[build_configurations.values.uniq.map { |each| [each, []] }]
+    expected_bundle_identifiers = Hash[build_configurations.values.uniq.map { |each| [ each, [nil,[]] ] }]
     build_configurations.each do |key, value|
-      expected_bundle_identifiers[value].push(infer_bundle_identifier(environment: key))
+      expected_bundle_identifiers[value][0] = key
+      expected_bundle_identifiers[value][1].push(infer_bundle_identifier(environment: key))
     end
     expected_bundle_identifiers.each do |key, value|
       found_bundle_identifier = read_project_property(
+        environment: value[0],
         build_configuration: key,
         build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
       )
-      UI.message "Validating bundle identifier for '#{key}'. Expected any of: '#{value}', found: '#{found_bundle_identifier}'."
-      unless value.include?(found_bundle_identifier)
-        UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{value}'."
-      end
+     UI.message "Validating bundle identifier for '#{key}' (environment '#{value[0]}'). Expected any of: '#{value[1]}', found: '#{found_bundle_identifier}'."
+     unless value[1].include?(found_bundle_identifier)
+        UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{key}'."
+     end
     end
 
     UI.success "Project validations succeeded!"
@@ -70,6 +72,7 @@ reflected in `Info.plist` during building."
 
     desc "Read bundle identifier from project configuration."
     bundle_identifier = read_project_property(
+      environment: environment,
       build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
@@ -182,6 +185,7 @@ reflected in `Info.plist` during building."
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
+      environment: environment,
       build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
@@ -249,6 +253,7 @@ reflected in `Info.plist` during building."
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
+      environment: environment,
       build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
@@ -304,6 +309,7 @@ reflected in `Info.plist` during building."
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
+      environment: environment,
       build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
