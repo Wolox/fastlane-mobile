@@ -222,21 +222,29 @@ reflected in `Info.plist` during building."
 
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
+    scheme = get_scheme(environment: environment)
+    project_file = Actions::ProjectNameAction.project_filename
 
     desc "Download provisioning profile and certificates if not present."
     refresh_certificates(
       environment: environment
     )
 
-    desc "Build the app using default project and scheme"
-    gym(
+    desc "Build the app using the project, build configuration and scheme"
+    params = {
+      scheme: scheme,
       configuration: build_configuration,
       include_symbols: true,
       # bitcode is disabled for the dsym file to keep valid after app is uploaded to app store
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
       include_bitcode: false
-    )
-    ### Check if external_team_id needed
+    }
+    if project_file.include? ".xcodeproj" do
+      params[:project] = project_file
+    else
+      params[:scheme] = project_file
+    end
+    gym(params)
 
   end
 
