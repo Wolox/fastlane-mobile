@@ -9,19 +9,18 @@ module Fastlane
       # with the provided build setting value.
 
       def self.run(params)
-        if params[:environment]
-          environment_info = Actions::GetEnvironmentInfoAction.run(environment: params[:environment])
-        else
-          environment_info = Actions::GetEnvironmentInfoAction.run({})
-        end
-        scheme = environment_info[SCHEME_ENV_KEY] || Actions::ProjectNameAction.run({})
-        project = Xcodeproj::Project.open(params[:project])
-        build_configuration = project
+        nvironment = params[:environment]
+        project_name = Actions::ProjectNameAction.project_filename
+        build_configuration_name = Actions::GetBuildConfigurationAction.run(environment: environment)
+        scheme = Actions::GetSchemeAction.run(environment: environment)
+
+        project = Xcodeproj::Project.open(project_name)
+        build_configuration = project_name
           .targets.find { |each| each.name == scheme }
-          .build_configurations.find { |each| each.name == params[:build_configuration] }
+          .build_configurations.find { |each| each.name == build_configuration_name }
 
         if build_configuration.nil?
-          UI.abort_with_message! "Build configuration '#{params[:build_configuration]}' is not configured."
+          UI.abort_with_message! "Build configuration '#{build_configuration_name}' for scheme '#{scheme}' (environment: '#{environment}') is not configured."
         end
 
         build_configuration.build_settings[params[:build_setting]] = params[:build_setting_value]
@@ -36,9 +35,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :project, optional: true, default_value: Actions::ProjectNameAction.project_filename),
-          FastlaneCore::ConfigItem.new(key: :environment, optional: true, type: Symbol),
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false),
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
           FastlaneCore::ConfigItem.new(key: :build_setting, optional: false),
           FastlaneCore::ConfigItem.new(key: :build_setting_value, optional: false),
         ]

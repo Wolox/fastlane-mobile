@@ -9,22 +9,26 @@ platform :ios do
 
     desc "Validate the configured bundle identifiers match the expected ones."
     build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations
-
-    expected_bundle_identifiers = Hash[build_configurations.values.uniq.map { |each| [ each, [nil,[]] ] }]
     build_configurations.each do |key, value|
-      expected_bundle_identifiers[value][0] = key
-      expected_bundle_identifiers[value][1].push(infer_bundle_identifier(environment: key))
-    end
-    expected_bundle_identifiers.each do |key, value|
       found_bundle_identifier = read_project_property(
-        environment: value[0],
-        build_configuration: key,
+        environment: key,
         build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
       )
-     UI.message "Validating bundle identifier for '#{key}' (environment '#{value[0]}'). Expected any of: '#{value[1]}', found: '#{found_bundle_identifier}'."
-     unless value[1].include?(found_bundle_identifier)
-        UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{key}'."
-     end
+      expected_bundle_identifier = infer_bundle_identifier(environment: key)
+      UI.message "Validating bundle identifier for build configuration '#{value}' in environment '#{key}'. Expected: '#{expected_bundle_identifier}', found: '#{found_bundle_identifier}'."
+      unless expected_bundle_identifier.eql?(found_bundle_identifier)
+        UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{value}' in environment '#{key}'."
+      end
+    end
+
+    desc "Validate the configured code signing teams match the expected ones."
+    build_configurations.each do |key, value|
+      found_team = read_project_property(environment: key, build_setting: Actions::SetProjectSigningAction.DEVELOPMENT_TEAM)
+      expected_team = get_credentials(environment: key)[:team]
+      UI.message "Validating code signing team for build configuration '#{value}' in environment '#{key}'. Expected: '#{expected_team}', found: '#{found_team}'."
+      unless expected_bundle_identifier.eql?(found_bundle_identifier)
+        UI.abort_with_message! "Aborting due to mismatching in code signing team for build configuration '#{value}' in environment '#{key}'."
+      end
     end
 
     UI.success "Project validations succeeded!"
@@ -73,7 +77,6 @@ reflected in `Info.plist` during building."
     desc "Read bundle identifier from project configuration."
     bundle_identifier = read_project_property(
       environment: environment,
-      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -186,7 +189,6 @@ reflected in `Info.plist` during building."
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
       environment: environment,
-      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -255,7 +257,6 @@ reflected in `Info.plist` during building."
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
       environment: environment,
-      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
@@ -294,7 +295,6 @@ reflected in `Info.plist` during building."
     desc "Update project signing identity and provisioning profile"
     set_project_signing(
       environment: environment,
-      build_configuration: build_configuration,
       provisioning_profile: match_result[bundle_identifier],
       development_team: get_credentials(environment: environment)[:team],
     )
@@ -307,7 +307,6 @@ reflected in `Info.plist` during building."
   private_lane :refresh_certificates do |options|
 
     environment = options[:environment]
-    build_configuration = get_build_configuration(environment: environment)
     match_type = get_match_type(environment: environment)
     credentials = get_credentials(environment: environment)
     certificates_info = get_certificates_info(environment: environment)
@@ -315,7 +314,6 @@ reflected in `Info.plist` during building."
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
       environment: environment,
-      build_configuration: build_configuration,
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
