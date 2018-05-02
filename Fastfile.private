@@ -239,10 +239,10 @@ reflected in `Info.plist` during building."
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
       include_bitcode: false
     }
-    if project_file.include? ".xcodeproj" do
-      params[:project] = project_file
+    if project_file.include? ".xcworkspace" do
+      params[:workspace] = project_file
     else
-      params[:scheme] = project_file
+      params[:project] = project_file
     end
     gym(params)
 
