@@ -72,7 +72,7 @@ SCHEME="The scheme to use for building the app"
 ```
 
 For any further configuration, you will have to modify the `Fastfile`s or the custom actions.
-For example, if you want to have the script take care of the changelog and distributing the build, you have to change `skip_waiting_for_build_processing` to false for pilot in the `Fastfile`.
+For example, if you want to have the script take care of the changelog and distributing the build, you have to change `skip_waiting_for_build_processing` to `false` for pilot in the `Fastfile.private`.
 
 ## Actions
 

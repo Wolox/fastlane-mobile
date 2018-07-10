@@ -9,10 +9,10 @@ module Fastlane
 
       DEFAULT_PROJECT_EXTENSION = ".xcodeproj".freeze
 
-      # This script returns the application name
-      # if there is a scheme that matches the project name.
-      # Otherwise, it assumes the project name should be specified
-      # by the user and fails.
+      # This script returns the project name.
+      # It uses the .env configs.
+      # Otherwise, it tries to infer it from file system;
+      # if it can't, it fails.
 
       def self.run(params)
         environment_info = Actions::GetEnvironmentInfoAction.run({})

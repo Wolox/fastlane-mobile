@@ -3,7 +3,7 @@ module Fastlane
     class GetSchemeAction < Action
 
       # Given an environment
-      # this script returns the build configuration associated to it.
+      # this script returns the scheme associated to it.
 
       ENV_KEY = "SCHEME".freeze
 

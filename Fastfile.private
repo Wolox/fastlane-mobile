@@ -112,6 +112,7 @@ reflected in `Info.plist` during building."
 
     desc "Set version and build number in Info.plist"
     set_info_plist_version(
+      environment: environment,
       version_number: current_version_number,
       build_number: next_build_number.to_s
     )
@@ -151,6 +152,7 @@ reflected in `Info.plist` during building."
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
       set_info_plist_version(
+        environment: environment,
         version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
         build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
       )
