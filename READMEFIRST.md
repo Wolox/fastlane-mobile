@@ -63,10 +63,6 @@ BUNDLE_ID="The bundle identifier, in relation to the TEAM_NAME and the PROJECT_N
 BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcased"
       [optional: false by default]
 
-PROJECT_XCCONFIG_PATH="The relative path to base directory where the xcconfig files are, in relation to APP_NAME and BUILD_CONFIGURATION"
-      [optional: default in custom action]
-      [example: "%s/Configuration Files/%s.xcconfig" == "APP_NAME/Configuration Files/BUILD_CONFIGURATION.xcconfig" or "my/Custom/Path/File.xcconfig" == "my/Custom/Path/File.xcconfig"]
-
 SCHEME="The scheme to use for building the app"
       [optional: PROJECT_NAME by default]
 ```

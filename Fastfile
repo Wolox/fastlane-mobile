@@ -5,8 +5,9 @@ default_platform :ios
 platform :ios do
 
   desc "Before doing anything else."
-  before_all do
+  before_all do |lane, options|
     validate
+    general_config
   end
 
   desc "After all the steps have completed succesfully."

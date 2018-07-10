@@ -1,5 +1,13 @@
 platform :ios do
 
+  desc "Before doing anything else."
+  before_all do |lane, options|
+    environment = options[:environment]
+    if environment do
+      environment_config(environment: environment)
+    end
+  end
+
   desc "Validate project configuration before running a lane."
   desc "Useful to force validations, to avoid errors in lanes due to misconfigurations."
   private_lane :validate do
@@ -43,6 +51,20 @@ platform :ios do
         build_setting_value: env == :test ? GENERIC_DEV : GENERIC_DIST
       )
     end
+
+  end
+
+  private_lane :environment_config do |options|
+
+    environment = options[:environment]
+
+    desc "Confirm data"
+    build_config = get_build_configuration(environment: environment)
+    app_name = get_application_name(environment: environment, project_name: project_name)
+    bundle_id = infer_bundle_identifier(environment: environment)
+
+
+    desc "Set bundle identifier"
 
   end
 

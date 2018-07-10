@@ -27,7 +27,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :environment, optional: true, type: Symbol)
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol)
         ]
       end
 
