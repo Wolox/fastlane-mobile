@@ -13,7 +13,7 @@ module Fastlane
         else
           environment_info = Actions::GetEnvironmentInfoAction.run({})
         end
-        environment_info[SCHEME_ENV_KEY] || Actions::ProjectNameAction.run({})
+        environment_info[ENV_KEY] || Actions::ProjectNameAction.run({})
       end
 
       def self.get_all_schemes

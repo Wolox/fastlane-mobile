@@ -9,13 +9,13 @@ module Fastlane
       # with the provided build setting value.
 
       def self.run(params)
-        nvironment = params[:environment]
+        environment = params[:environment]
         project_name = Actions::ProjectNameAction.project_filename
         build_configuration_name = Actions::GetBuildConfigurationAction.run(environment: environment)
         scheme = Actions::GetSchemeAction.run(environment: environment)
 
-        project = XcodeProject::Project.open(project_name)
-        build_configuration = project_name
+        project = Xcodeproj::Project.open(project_name)
+        build_configuration = project
           .targets.find { |each| each.name == scheme }
           .build_configurations.find { |each| each.name == build_configuration_name }
 

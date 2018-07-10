@@ -1,13 +1,5 @@
 platform :ios do
 
-  desc "Before doing anything else."
-  before_all do |lane, options|
-    environment = options[:environment]
-    if environment do
-      environment_config(environment: environment)
-    end
-  end
-
   desc "Validate project configuration before running a lane."
   desc "Useful to force validations, to avoid errors in lanes due to misconfigurations."
   private_lane :validate do
@@ -21,7 +13,7 @@ platform :ios do
     schemes = Actions::GetSchemeAction.get_all_schemes.values.uniq
     project_schemes = project.native_targets.map { |target| target.name }.uniq
     # If the intersection is all the schemes we want, it's okay.
-    unless (project_schemes & schemes).size == schemes.size do
+    unless (project_schemes & schemes).size == schemes.size
       UI.abort_with_message! "Not all schemes specified in .env files exist in project. Searched for #{schemes}."
     end
 
@@ -29,7 +21,7 @@ platform :ios do
     build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations.values.uniq
     project_build_configs = project.build_configurations.map { |config| config.name }.uniq
     # If the intersection is all the build configurations we want, it's okay.
-    unless (project_build_configs & build_configurations).size == build_configurations.size do
+    unless (project_build_configs & build_configurations).size == build_configurations.size
       UI.abort_with_message! "Not all build configurations specified in .env files exist in project. Searched for #{build_configurations}."
     end
 
@@ -62,9 +54,25 @@ platform :ios do
     build_config = get_build_configuration(environment: environment)
     app_name = get_application_name(environment: environment, project_name: project_name)
     bundle_id = infer_bundle_identifier(environment: environment)
+    scheme = get_scheme(environment: environment)
 
+    puts(Terminal::Table.new(
+         title: "Configurations for environment '#{environment}'".green,
+         headings: [],
+         rows: FastlaneCore::PrintTable.transform_output([
+           ['Application Name', app_name],
+           ['Build Configuration', build_config],
+           ['Scheme', scheme],
+           ['Bundle Identifier', bundle_id]
+        ])
+    ))
+    confirmation = UI.input "If the parameters are correct, proceed: y/N"
+    unless confirmation.downcase == "y"
+      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+    end
 
     desc "Set bundle identifier"
+    # ...
 
   end
 
@@ -76,20 +84,16 @@ platform :ios do
   end
 
   desc "Releases a new version to `TestFlight`. This lane must receive the following parameters:"
-  desc "- environment: The environment to deploy to. \
-Can be any of: `%s`" % Actions::GetEnvironmentInfoAction::ENVIRONMENTS_FILES.keys.to_s
-  desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it.
-  Its allowed values depend on the configuration: '#{Actions::CheckBumpTypeAction::ENVIRONMENT_ALLOWED_BUMP_TYPES.to_s}'."
+  desc "- environment: The environment to deploy to. Can be any of: `%s`" % Actions::GetEnvironmentInfoAction::ENVIRONMENTS_FILES.keys.to_s
+  desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it. Its allowed values depend on the configuration: '#{Actions::CheckBumpTypeAction::ENVIRONMENT_ALLOWED_BUMP_TYPES.to_s}'."
   desc ""
   desc "It has basically 3 main responsabilities: build/version number managing, app building, and deploy."
   desc ""
   desc "- Gets the latest version and build number from `TestFlight`"
   desc "- Sets these version and build values in the `Info.plist` to be used to build the app."
-  desc "- Builds the app using `gym` and `match` to get the signing identity. The provisioning profile in use is the one \
-selected in xcode for the selected configuration"
+  desc "- Builds the app using `gym` and `match` to get the signing identity. The provisioning profile in use is the one selected in xcode for the selected configuration"
   desc "- Uploads the generated `.dsym` file to `Rollbar`."
-  desc "- Discards the changes in `Info.plist`. Given this file is used for every configuration, these values are just \
-reflected in `Info.plist` during building."
+  desc "- Discards the changes in `Info.plist`. Given this file is used for every configuration, these values are just reflected in `Info.plist` during building."
   desc "- Uploads the application to `TestFlight` using `pilot`."
   desc ""
   desc "Check [here](http://semver.org/) for reference about versioning."
@@ -182,6 +186,7 @@ reflected in `Info.plist` during building."
       desc "Upload the built app to TestFlight."
       UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
       publish_testflight(environment: environment)
+
     ensure
       desc "Put back the default version number and build number in `Info.plist`."
       set_info_plist_version(
@@ -190,6 +195,7 @@ reflected in `Info.plist` during building."
         build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
       )
     end
+
   end
 
   desc "Executes the tests for the project using `scan`."
@@ -339,7 +345,7 @@ reflected in `Info.plist` during building."
     set_project_signing(
       environment: environment,
       provisioning_profile: match_result[bundle_identifier],
-      development_team: get_credentials(environment: environment)[:team],
+      development_team: get_credentials(environment: environment)[:team]
     )
 
     UI.success "Project configured successfully. Please commit your changes."
@@ -375,7 +381,7 @@ reflected in `Info.plist` during building."
   end
 
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
-  lane :add_single_device do
+  private_lane :add_single_device do
 
     # Devices are only important for development
     credentials = get_credentials(environment: :test)

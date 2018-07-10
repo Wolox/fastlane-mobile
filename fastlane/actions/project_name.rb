@@ -35,23 +35,25 @@ module Fastlane
       # it can be automatically inferred by the script
       # if no parameter project is received.
       def self.default_project
-        projects = Dir.entries('.').select { |each| File.extname(each) == project_extension }
+        extension = project_extension
+        projects = Dir.entries(ENV['PWD']).select { |each| File.extname(each) == extension }
         if projects.length == 0
-          UI.abort_with_message! "No projects with extension '#{project_extension}' found in root directory."
+          UI.abort_with_message! "No projects with extension '#{extension}' found in root directory."
         end
         if projects.length > 1
-          UI.abort_with_message! "Multiple projects with extension '#{project_extension}' found in root directory."
+          UI.abort_with_message! "Multiple projects with extension '#{extension}' found in root directory."
         end
-        projects.first
+        File.join(ENV['PWD'], projects.first)
       end
 
       # In case there is a scheme matching project's name
       # it can be automatically inferred by the script
       # if no parameter scheme is received.
       def self.matching_scheme
-        target = Xcodeproj::Project.open(default_project)
+        default = default_project
+        target = Xcodeproj::Project.open(default)
           .targets
-          .find { |each| each.name == File.basename(default_project, File.extname(default_project)) }
+          .find { |each| each.name == File.basename(default, File.extname(default)) }
         if target.nil?
           UI.abort_with_message! "No target matching project name '#{default_proj}' found."
         end
@@ -69,7 +71,12 @@ module Fastlane
       end
 
       def self.project_filename
-        run({}) + project_extension
+        env_info = Actions::GetEnvironmentInfoAction.run({})
+        if env_info[PROJECT_NAME_ENV_KEY]
+          env_info[PROJECT_NAME_ENV_KEY] + env_info[PROJECT_EXTENSION_ENV_KEY] || DEFAULT_PROJECT_EXTENSION
+        else
+          default_project
+        end
       end
 
       def self.project_extension
