@@ -21,10 +21,10 @@ module Fastlane
 
       def self.get_all_build_configurations
         {
-          test: Actions::GetEnvironmentInfoAction.run(environment: :test)[ENV_KEY] || DEFAULT_BUILD_CONFIGURATIONS[:test],
-          qa: Actions::GetEnvironmentInfoAction.run(environment: :qa)[ENV_KEY] || DEFAULT_BUILD_CONFIGURATIONS[:qa],
-          appstore: Actions::GetEnvironmentInfoAction.run(environment: :appstore)[ENV_KEY] || DEFAULT_BUILD_CONFIGURATIONS[:appstore],
-          production: Actions::GetEnvironmentInfoAction.run(environment: :production)[ENV_KEY] || DEFAULT_BUILD_CONFIGURATIONS[:production]
+          test: Actions::GetBuildConfigurationAction.run(environment: :test),
+          qa: Actions::GetBuildConfigurationAction.run(environment: :qa),
+          appstore: Actions::GetBuildConfigurationAction.run(environment: :appstore),
+          production: Actions::GetBuildConfigurationAction.run(environment: :production)
         }
       end
 

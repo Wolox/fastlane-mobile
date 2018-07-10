@@ -7,31 +7,42 @@ platform :ios do
     desc "Validate the project name and main target are properly configured."
     UI.message "Running lane for project: '#{project_name}'."
 
-    desc "Validate the configured bundle identifiers match the expected ones."
-    build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations
-    build_configurations.each do |key, value|
-      found_bundle_identifier = read_project_property(
-        environment: key,
-        build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
-      )
-      expected_bundle_identifier = infer_bundle_identifier(environment: key)
-      UI.message "Validating bundle identifier for build configuration '#{value}' in environment '#{key}'. Expected: '#{expected_bundle_identifier}', found: '#{found_bundle_identifier}'."
-      unless expected_bundle_identifier.eql?(found_bundle_identifier)
-        UI.abort_with_message! "Aborting due to mismatching in bundle identifier for build configuration '#{value}' in environment '#{key}'."
-      end
+    project = Xcodeproj::Project.open(Actions::ProjectNameAction.project_filename)
+
+    desc "Validate the configured schemes exist in project."
+    schemes = Actions::GetSchemeAction.get_all_schemes.values.uniq
+    project_schemes = project.native_targets.map { |target| target.name }.uniq
+    # If the intersection is all the schemes we want, it's okay.
+    unless (project_schemes & schemes).size == schemes.size do
+      UI.abort_with_message! "Not all schemes specified in .env files exist in project. Searched for #{schemes}."
     end
 
-    desc "Validate the configured code signing teams match the expected ones."
-    build_configurations.each do |key, value|
-      found_team = read_project_property(environment: key, build_setting: Actions::SetProjectSigningAction.DEVELOPMENT_TEAM)
-      expected_team = get_credentials(environment: key)[:team]
-      UI.message "Validating code signing team for build configuration '#{value}' in environment '#{key}'. Expected: '#{expected_team}', found: '#{found_team}'."
-      unless expected_bundle_identifier.eql?(found_bundle_identifier)
-        UI.abort_with_message! "Aborting due to mismatching in code signing team for build configuration '#{value}' in environment '#{key}'."
-      end
+    desc "Validate the configured build configurations exist in project."
+    build_configurations = Actions::GetBuildConfigurationAction.get_all_build_configurations.values.uniq
+    project_build_configs = project.build_configurations.map { |config| config.name }.uniq
+    # If the intersection is all the build configurations we want, it's okay.
+    unless (project_build_configs & build_configurations).size == build_configurations.size do
+      UI.abort_with_message! "Not all build configurations specified in .env files exist in project. Searched for #{build_configurations}."
     end
 
     UI.success "Project validations succeeded!"
+
+  end
+
+  private_lane :general_config do
+
+    desc "Set code signing identity to neutral, so that XCode tries to search for identities that comply with the development team and provisioning profile set afterwards."
+    # If not, a build configuration used for more than one dev team (one in each environment), won't work.
+    CODE_SIGNING_IDENTITY = 'CODE_SIGN_IDENTITY'.freeze
+    GENERIC_DEV = 'iPhone Developer'.freeze
+    GENERIC_DIST = 'iPhone Distribution'.freeze
+    Actions::GetBuildConfigurationAction.get_all_build_configurations.each do |env, build_config|
+      Actions::UpdateProjectPropertyAction.run(
+        environment: env,
+        build_setting: CODE_SIGNING_IDENTITY,
+        build_setting_value: env == :test ? GENERIC_DEV : GENERIC_DIST
+      )
+    end
 
   end
 

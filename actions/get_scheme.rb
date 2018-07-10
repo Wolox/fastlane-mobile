@@ -16,6 +16,15 @@ module Fastlane
         environment_info[SCHEME_ENV_KEY] || Actions::ProjectNameAction.run({})
       end
 
+      def self.get_all_schemes
+        {
+          test: Actions::GetSchemeAction.run(environment: :test),
+          qa: Actions::GetSchemeAction.run(environment: :qa),
+          appstore: Actions::GetSchemeAction.run(environment: :appstore),
+          production: Actions::GetSchemeAction.run(environment: :production)
+        }
+      end
+
       # Fastlane Action class required functions.
 
       def self.is_supported?(platform)

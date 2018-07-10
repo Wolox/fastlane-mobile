@@ -8,11 +8,14 @@ module Fastlane
       INFO_PLIST_KEY = "INFOPLIST_FILE".freeze
 
       def self.run(params)
-        project = Actions::ProjectNameAction.run(params)
+        project_name = Actions::ProjectNameAction.project_filename
         scheme_name = Actions::GetSchemeAction.run(params)
-        project = XcodeProject::Project.open(project)
+        build_configuration_name = Actions::GetBuildConfigurationAction.run(params)
+
+        project = Xcodeproj::Project.open(project_name)
         scheme = project.native_targets.detect { |target| target.name == scheme_name }
-        plist_path = scheme.build_configurations.first.build_settings[INFO_PLIST_KEY]
+        build_configuration = scheme.build_configurations.detect { |config| config.name == build_configuration_name }
+        plist_path = build_configuration.build_settings[INFO_PLIST_KEY]
         return plist_path
       end
 
