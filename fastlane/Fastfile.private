@@ -37,12 +37,20 @@ platform :ios do
     GENERIC_DEV = 'iPhone Developer'.freeze
     GENERIC_DIST = 'iPhone Distribution'.freeze
     Actions::GetBuildConfigurationAction.get_all_build_configurations.each do |env, build_config|
-      Actions::UpdateProjectPropertyAction.run(
+      update_project_property(
         environment: env,
         build_setting: CODE_SIGNING_IDENTITY,
         build_setting_value: env == :test ? GENERIC_DEV : GENERIC_DIST
       )
     end
+
+    desc "Disabling automatic signing for all targets that are configured with these scripts"
+    project_file = Actions::ProjectNameAction.project_filename
+    automatic_code_signing(
+      path: project_file,
+      use_automatic_signing: false,
+      targets: Actions::GetSchemeAction.get_all_schemes.values.uniq
+    )
 
   end
 
@@ -56,6 +64,7 @@ platform :ios do
     bundle_id = infer_bundle_identifier(environment: environment)
     scheme = get_scheme(environment: environment)
 
+    puts("")
     puts(Terminal::Table.new(
          title: "Configurations for environment '#{environment}'".green,
          headings: [],
@@ -72,8 +81,14 @@ platform :ios do
     end
 
     desc "Set bundle identifier"
-    # ...
+    update_project_property(environment: environment, build_setting: "PRODUCT_BUNDLE_IDENTIFIER", build_setting_value: bundle_id)
 
+  end
+
+  private_lane :certificates_config do |options|
+    environment = options[:environment]
+    team_id = get_credentials(environment: environment)[:team_id]
+    # TODO: git branch, url, etc.
   end
 
   private_lane :clean do
@@ -264,11 +279,19 @@ platform :ios do
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     scheme = get_scheme(environment: environment)
+    bundle_id = infer_bundle_identifier(environment: environment)
     project_file = Actions::ProjectNameAction.project_filename
 
     desc "Download provisioning profile and certificates if not present."
-    refresh_certificates(
+    prov_profiles = refresh_certificates(
       environment: environment
+    )
+
+    desc "Set provisioning profile"
+    update_project_property(
+      environment: environment,
+      build_setting: "PROVISIONING_PROFILE_SPECIFIER",
+      build_setting_value: prov_profiles[bundle_id]
     )
 
     desc "Build the app using the project, build configuration and scheme"
@@ -359,12 +382,7 @@ platform :ios do
     match_type = get_match_type(environment: environment)
     credentials = get_credentials(environment: environment)
     certificates_info = get_certificates_info(environment: environment)
-
-    desc "Bundle identifier from xCode project"
-    bundle_identifier = read_project_property(
-      environment: environment,
-      build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
-    )
+    bundle_identifier = infer_bundle_identifier(environment: environment)
 
     desc "Download provisioning profile and certificates if not present."
     match(
@@ -372,6 +390,8 @@ platform :ios do
       type: match_type,
       readonly: true,
       clone_branch_directly: true,
+      shallow_clone: true,
+      skip_docs: true,
       username: credentials[:account],
       team_id: credentials[:team],
       git_url: certificates_info[:url],

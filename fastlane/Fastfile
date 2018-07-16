@@ -1,7 +1,7 @@
 import 'Fastfile.private'
 fastlane_version '2.81.0'
 default_platform :ios
-require 'pry'
+fastlane_require 'pry'
 
 platform :ios do
 
@@ -28,6 +28,7 @@ platform :ios do
   desc "New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number."
   lane :release_qa do
     environment_config(environment: :qa)
+    certificates_config(environment: :qa)
     release environment: :qa
   end
 
@@ -36,6 +37,7 @@ platform :ios do
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
   lane :release_internal_appstore do |options|
     environment_config(environment: :appstore)
+    certificates_config(environment: :appstore)
     release environment: :appstore, bump_type: options[:bump_type]
   end
 
@@ -44,6 +46,7 @@ platform :ios do
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
   lane :release_external_appstore do |options|
     environment_config(environment: :production)
+    certificates_config(environment: :production)
     release environment: :production, bump_type: options[:bump_type]
   end
 
@@ -56,60 +59,72 @@ platform :ios do
   desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`."
   lane :create_development_app do
     environment_config(environment: :test)
+    certificates_config(environment: :test)
     create_app environment: :test
-      environment_config(environment: :qa)
+    certificates_config(environment: :qa)
+    environment_config(environment: :qa)
     create_app environment: :qa
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`."
   lane :create_internal_appstore_app do
     environment_config(environment: :appstore)
+    certificates_config(environment: :appstore)
     create_app environment: :appstore
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:production`."
   lane :create_external_appstore_app do
     environment_config(environment: :production)
+    certificates_config(environment: :production)
     create_app environment: :production
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`."
   lane :generate_push_certificates_development do
     environment_config(environment: :test)
+    certificates_config(environment: :test)
     generate_push_certificates environment: :test
-      environment_config(environment: :qa)
+    environment_config(environment: :qa)
+    certificates_config(environment: :qa)
     generate_push_certificates environment: :qa
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:appstore`."
   lane :generate_push_certificates_internal_appstore do
     environment_config(environment: :appstore)
+    certificates_config(environment: :appstore)
     generate_push_certificates environment: :appstore
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:production`."
   lane :generate_push_certificates_external_appstore do
     environment_config(environment: :production)
+    certificates_config(environment: :production)
     generate_push_certificates environment: :production
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`."
   lane :refresh_development_certificates do
     environment_config(environment: :test)
+    certificates_config(environment: :test)
     refresh_certificates environment: :test
-      environment_config(environment: :qa)
+    environment_config(environment: :qa)
+    certificates_config(environment: :qa)
     refresh_certificates environment: :qa
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`."
   lane :refresh_internal_appstore_certificates do
     environment_config(environment: :appstore)
+    certificates_config(environment: :appstore)
     refresh_certificates environment: :appstore
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
   lane :refresh_external_appstore_certificates do
     environment_config(environment: :production)
+    certificates_config(environment: :production)
     refresh_certificates environment: :production
   end
 
