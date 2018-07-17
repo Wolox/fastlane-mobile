@@ -130,6 +130,7 @@ platform :ios do
 
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
   lane :add_device do
+    certificates_config(environment: :test)
     add_single_device
   end
 

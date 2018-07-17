@@ -31,19 +31,6 @@ platform :ios do
 
   private_lane :general_config do
 
-    desc "Set code signing identity to neutral, so that XCode tries to search for identities that comply with the development team and provisioning profile set afterwards."
-    # If not, a build configuration used for more than one dev team (one in each environment), won't work.
-    CODE_SIGNING_IDENTITY = 'CODE_SIGN_IDENTITY'.freeze
-    GENERIC_DEV = 'iPhone Developer'.freeze
-    GENERIC_DIST = 'iPhone Distribution'.freeze
-    Actions::GetBuildConfigurationAction.get_all_build_configurations.each do |env, build_config|
-      update_project_property(
-        environment: env,
-        build_setting: CODE_SIGNING_IDENTITY,
-        build_setting_value: env == :test ? GENERIC_DEV : GENERIC_DIST
-      )
-    end
-
     desc "Disabling automatic signing for all targets that are configured with these scripts"
     project_file = Actions::ProjectNameAction.project_filename
     automatic_code_signing(
@@ -81,14 +68,49 @@ platform :ios do
     end
 
     desc "Set bundle identifier"
-    update_project_property(environment: environment, build_setting: "PRODUCT_BUNDLE_IDENTIFIER", build_setting_value: bundle_id)
+    update_project_property(
+      environment: environment,
+      build_setting: "PRODUCT_BUNDLE_IDENTIFIER",
+      build_setting_value: bundle_id
+    )
 
   end
 
   private_lane :certificates_config do |options|
     environment = options[:environment]
-    team_id = get_credentials(environment: environment)[:team_id]
-    # TODO: git branch, url, etc.
+    credentials = get_credentials(environment: environment)
+    certificates_info = get_certificates_info(environment: environment)
+
+    desc "Confirm certificates and credentials information"
+    team_id = credentials[:team]
+    itc_team_id = credentials[:itc_team]
+    apple_account = credentials[:account]
+    git_url = certificates_info[:url]
+    git_branch = certificates_info[:branch]
+
+    puts("")
+    puts(Terminal::Table.new(
+         title: "Configurations for environment '#{environment}'".green,
+         headings: [],
+         rows: FastlaneCore::PrintTable.transform_output([
+           ['Developer Center Team ID', team_id],
+           ['iTunes Connect Team ID', itc_team_id],
+           ['Apple Account', apple_account],
+           ['Git url for certificates', git_url],
+           ['Git branch for team', git_branch]
+        ])
+    ))
+    confirmation = UI.input "If the parameters are correct, proceed: y/N"
+    unless confirmation.downcase == "y"
+      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+    end
+
+    desc "Set Development Team"
+    update_project_property(
+      environment: environment,
+      build_setting: 'DEVELOPMENT_TEAM',
+      build_setting_value: team_id
+    )
   end
 
   private_lane :clean do
@@ -287,11 +309,14 @@ platform :ios do
       environment: environment
     )
 
+    desc "Set updated provisioning profile"
+    prov_profile = prov_profiles[bundle_id]
+    UI.message "Using updated provisioning profile #{prov_profile}".green
     desc "Set provisioning profile"
     update_project_property(
       environment: environment,
       build_setting: "PROVISIONING_PROFILE_SPECIFIER",
-      build_setting_value: prov_profiles[bundle_id]
+      build_setting_value: prov_profile
     )
 
     desc "Build the app using the project, build configuration and scheme"
