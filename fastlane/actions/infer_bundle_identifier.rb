@@ -16,8 +16,8 @@ module Fastlane
 
       # Format for bundle identifiers by environment.
       BUNDLE_IDENTIFIERS_FORMAT = {
-        dev: "com.%s.%s.debug",
-        qa: "com.%s.%s.alpha",
+        dev: "com.%s.%s.dev",
+        qa: "com.%s.%s.dev",
         stage: "com.%s.%s",
         production: "com.%s.%s"
       }.freeze
