@@ -10,25 +10,28 @@ Tested in fastlane `2.81.0`.
 To add fastlane scripts to your project, you need to:
 
 - copy `fastlane` folder to your project's root dir
-- add it to the Gemfile (as in the one [here](./Gemfile))
+- add fastlane to the Gemfile (as in the one [here](./Gemfile))
 - run bundle install
 
 and that's it!
 
+(You may want to add some fastlane noise to the .gitignore of your project, like the ones [here](./.gitignore))
+
 ## Scripts
 
 You can get detailed information on all the things you can do with these scripts in fastlane [README](./fastlane/README.md).
-Remember to run all fastlane commands preceeded by `bundle exec`.`
+Remember to run all fastlane commands preceeded by `bundle exec` (you can create an alias for this so it's easier).
 
 ## Environments
 
 These scripts handle 4 environments:
 - dev: intended for development
 - qa: intended for qa testing
-- stage: intended for user testing
+- stage: intended for user/client testing
 - production: intended for users
 
-If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions).
+If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions)
+and add lanes for it in the `Fastfile`.
 
 If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones
 and don't use the fastlane lanes associated with those extra ones.
