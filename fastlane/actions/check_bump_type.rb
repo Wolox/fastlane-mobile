@@ -13,9 +13,9 @@ module Fastlane
 
       ALL_BUMP_TYPES = %i(build patch minor major).freeze
       ENVIRONMENT_ALLOWED_BUMP_TYPES = {
-        test: [],
+        dev: [],
         qa: [:build],
-        appstore: ALL_BUMP_TYPES,
+        stage: ALL_BUMP_TYPES,
         production: ALL_BUMP_TYPES
       }.freeze
 

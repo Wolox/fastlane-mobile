@@ -261,7 +261,7 @@ platform :ios do
     match_type = get_match_type(environment: environment)
     credentials = get_credentials(environment: environment)
 
-    is_development = match_type == Actions::GetMatchTypeAction::MATCH_TYPES[:test]
+    is_development = match_type == Actions::GetMatchTypeAction::MATCH_TYPES[:dev]
     output_path = "#{environment.to_s}_push_certificates"
 
     desc "Bundle identifier from xCode project"
@@ -349,7 +349,7 @@ platform :ios do
     credentials = get_credentials(environment: environment)
     certificates_info = get_certificates_info(environment: environment)
 
-    skip_itc = environment == :test
+    skip_itc = environment == :dev
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
@@ -429,8 +429,8 @@ platform :ios do
   private_lane :add_single_device do
 
     # Devices are only important for development
-    credentials = get_credentials(environment: :test)
-    certificates_info = get_certificates_info(environment: :test)
+    credentials = get_credentials(environment: :dev)
+    certificates_info = get_certificates_info(environment: :dev)
 
     desc "Ask the user for device name and device UDID"
     device_name = prompt(text: 'Enter the device name: ')

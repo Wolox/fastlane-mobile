@@ -7,9 +7,9 @@ module Fastlane
 
       # Default match types by environment
       MATCH_TYPES = {
-        test: "development",
+        dev: "development",
         qa: "appstore",
-        appstore: "appstore",
+        stage: "appstore",
         production: "appstore"
       }.freeze
 

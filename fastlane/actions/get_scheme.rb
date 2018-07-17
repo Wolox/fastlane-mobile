@@ -18,9 +18,9 @@ module Fastlane
 
       def self.get_all_schemes
         {
-          test: Actions::GetSchemeAction.run(environment: :test),
+          dev: Actions::GetSchemeAction.run(environment: :dev),
           qa: Actions::GetSchemeAction.run(environment: :qa),
-          appstore: Actions::GetSchemeAction.run(environment: :appstore),
+          stage: Actions::GetSchemeAction.run(environment: :stage),
           production: Actions::GetSchemeAction.run(environment: :production)
         }
       end

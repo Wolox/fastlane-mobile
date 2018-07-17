@@ -23,9 +23,9 @@ Remember to run all fastlane commands preceeded by `bundle exec`.`
 ## Environments
 
 These scripts handle 4 environments:
-- test: intended for development
+- dev: intended for development
 - qa: intended for qa testing
-- appstore: intended for user testing
+- stage: intended for user testing
 - production: intended for users
 
 If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions).

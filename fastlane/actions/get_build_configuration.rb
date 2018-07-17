@@ -9,9 +9,9 @@ module Fastlane
 
       # Default build configuration by environment
       DEFAULT_BUILD_CONFIGURATIONS = {
-        test: "Debug",
+        dev: "Debug",
         qa: "Alpha",
-        appstore: "Release",
+        stage: "Release",
         production: "Production"
       }.freeze
 
@@ -21,9 +21,9 @@ module Fastlane
 
       def self.get_all_build_configurations
         {
-          test: Actions::GetBuildConfigurationAction.run(environment: :test),
+          dev: Actions::GetBuildConfigurationAction.run(environment: :dev),
           qa: Actions::GetBuildConfigurationAction.run(environment: :qa),
-          appstore: Actions::GetBuildConfigurationAction.run(environment: :appstore),
+          stage: Actions::GetBuildConfigurationAction.run(environment: :stage),
           production: Actions::GetBuildConfigurationAction.run(environment: :production)
         }
       end

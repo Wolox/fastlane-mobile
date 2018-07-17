@@ -9,9 +9,9 @@ module Fastlane
 
       # File with env variables by environment
       ENVIRONMENTS_FILES = {
-        test: File.dirname(__FILE__) + "/../config/test.env",
+        dev: File.dirname(__FILE__) + "/../config/test.env",
         qa: File.dirname(__FILE__) + "/../config/qa.env",
-        appstore: File.dirname(__FILE__) + "/../config/appstore.env",
+        stage: File.dirname(__FILE__) + "/../config/appstore.env",
         production: File.dirname(__FILE__) + "/../config/production.env"
       }.freeze
 

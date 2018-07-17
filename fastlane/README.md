@@ -68,17 +68,17 @@ Parameters:
 ```
 fastlane ios test
 ```
-Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`.
+Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:dev`.
 ### ios create_development_app
 ```
 fastlane ios create_development_app
 ```
-Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`.
+Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:dev` and `:qa`.
 ### ios create_internal_appstore_app
 ```
 fastlane ios create_internal_appstore_app
 ```
-Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`.
+Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:stage`.
 ### ios create_external_appstore_app
 ```
 fastlane ios create_external_appstore_app
@@ -88,12 +88,12 @@ Creates the `App ID` and `Provisioning Profile` for the configuration mapped to 
 ```
 fastlane ios generate_push_certificates_development
 ```
-Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`.
+Generates the push notifications certificates for the build configurations mapped to `:dev` and `:qa`.
 ### ios generate_push_certificates_internal_appstore
 ```
 fastlane ios generate_push_certificates_internal_appstore
 ```
-Generates the push notifications certificates for the build configurations mapped to `:appstore`.
+Generates the push notifications certificates for the build configurations mapped to `:stage`.
 ### ios generate_push_certificates_external_appstore
 ```
 fastlane ios generate_push_certificates_external_appstore
@@ -103,12 +103,12 @@ Generates the push notifications certificates for the build configurations mappe
 ```
 fastlane ios refresh_development_certificates
 ```
-Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`.
+Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:dev` and `:qa`.
 ### ios refresh_internal_appstore_certificates
 ```
 fastlane ios refresh_internal_appstore_certificates
 ```
-Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`.
+Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:stage`.
 ### ios refresh_external_appstore_certificates
 ```
 fastlane ios refresh_external_appstore_certificates

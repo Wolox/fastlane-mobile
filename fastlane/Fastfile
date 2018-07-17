@@ -35,102 +35,102 @@ platform :ios do
   desc "New release to iTunes Connect for AppStore (Release) in Wolox account."
   desc "Parameters:"
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
-  lane :release_internal_appstore do |options|
-    environment_config(environment: :appstore)
-    certificates_config(environment: :appstore)
-    release environment: :appstore, bump_type: options[:bump_type]
+  lane :release_stage do |options|
+    environment_config(environment: :stage)
+    certificates_config(environment: :stage)
+    release environment: :stage, bump_type: options[:bump_type]
   end
 
   desc "New release to iTunes Connect for AppStore (Production) in third party account."
   desc "Parameters:"
   desc "- bump_type (optional): represents the type of deploy. If not specified, the user will be asked for it."
-  lane :release_external_appstore do |options|
+  lane :release_production do |options|
     environment_config(environment: :production)
     certificates_config(environment: :production)
     release environment: :production, bump_type: options[:bump_type]
   end
 
-  desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:test`."
-  lane :test do
-    environment_config(environment: :test)
-    run_application_tests environment: :test
-  end
-
-  desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:test` and `:qa`."
+  desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:dev` and `:qa`."
   lane :create_development_app do
-    environment_config(environment: :test)
-    certificates_config(environment: :test)
-    create_app environment: :test
+    environment_config(environment: :dev)
+    certificates_config(environment: :dev)
+    create_app environment: :dev
     certificates_config(environment: :qa)
     environment_config(environment: :qa)
     create_app environment: :qa
   end
 
-  desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:appstore`."
-  lane :create_internal_appstore_app do
-    environment_config(environment: :appstore)
-    certificates_config(environment: :appstore)
-    create_app environment: :appstore
+  desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:stage`."
+  lane :create_stage_app do
+    environment_config(environment: :stage)
+    certificates_config(environment: :stage)
+    create_app environment: :stage
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configuration mapped to `:production`."
-  lane :create_external_appstore_app do
+  lane :create_production_app do
     environment_config(environment: :production)
     certificates_config(environment: :production)
     create_app environment: :production
   end
 
-  desc "Generates the push notifications certificates for the build configurations mapped to `:test` and `:qa`."
+  desc "Generates the push notifications certificates for the build configurations mapped to `:dev` and `:qa`."
   lane :generate_push_certificates_development do
-    environment_config(environment: :test)
-    certificates_config(environment: :test)
-    generate_push_certificates environment: :test
+    environment_config(environment: :dev)
+    certificates_config(environment: :dev)
+    generate_push_certificates environment: :dev
     environment_config(environment: :qa)
     certificates_config(environment: :qa)
     generate_push_certificates environment: :qa
   end
 
-  desc "Generates the push notifications certificates for the build configurations mapped to `:appstore`."
-  lane :generate_push_certificates_internal_appstore do
-    environment_config(environment: :appstore)
-    certificates_config(environment: :appstore)
-    generate_push_certificates environment: :appstore
+  desc "Generates the push notifications certificates for the build configurations mapped to `:stage`."
+  lane :generate_push_certificates_stage do
+    environment_config(environment: :stage)
+    certificates_config(environment: :stage)
+    generate_push_certificates environment: :stage
   end
 
   desc "Generates the push notifications certificates for the build configurations mapped to `:production`."
-  lane :generate_push_certificates_external_appstore do
+  lane :generate_push_certificates_production do
     environment_config(environment: :production)
     certificates_config(environment: :production)
     generate_push_certificates environment: :production
   end
 
-  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:test` and `:qa`."
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:dev` and `:qa`."
   lane :refresh_development_certificates do
-    environment_config(environment: :test)
-    certificates_config(environment: :test)
-    refresh_certificates environment: :test
+    environment_config(environment: :dev)
+    certificates_config(environment: :dev)
+    refresh_certificates environment: :dev
     environment_config(environment: :qa)
     certificates_config(environment: :qa)
     refresh_certificates environment: :qa
   end
 
-  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:appstore`."
-  lane :refresh_internal_appstore_certificates do
-    environment_config(environment: :appstore)
-    certificates_config(environment: :appstore)
-    refresh_certificates environment: :appstore
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:stage`."
+  lane :refresh_stage_certificates do
+    environment_config(environment: :stage)
+    certificates_config(environment: :stage)
+    refresh_certificates environment: :stage
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
-  lane :refresh_external_appstore_certificates do
+  lane :refresh_production_certificates do
     environment_config(environment: :production)
     certificates_config(environment: :production)
     refresh_certificates environment: :production
   end
 
+  desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:dev`."
+  lane :test do
+    environment_config(environment: :dev)
+    run_application_tests environment: :dev
+  end
+
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
   lane :add_device do
-    certificates_config(environment: :test)
+    certificates_config(environment: :dev)
     add_single_device
   end
 
