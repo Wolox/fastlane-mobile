@@ -311,7 +311,7 @@ platform :ios do
 
     desc "Set updated provisioning profile"
     prov_profile = prov_profiles[bundle_id]
-    UI.message "Using updated provisioning profile #{prov_profile}".green
+    UI.message "Using updated provisioning profile '#{prov_profile}'".green
     desc "Set provisioning profile"
     update_project_property(
       environment: environment,

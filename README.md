@@ -3,14 +3,12 @@ fastlane-mobile
 
 Fastlane scripts for deploying and managing Apple certificates in an iOS project.
 
-Tested in fastlane `2.81.0`.
-
 ## Setup
 
 To add fastlane scripts to your project, you need to:
 
 - copy `fastlane` folder to your project's root dir
-- add fastlane to the Gemfile (as in the one [here](./Gemfile))
+- add fastlane to the Gemfile with a compatible version (as in the one [here](./Gemfile))
 - run bundle install
 
 and that's it!
