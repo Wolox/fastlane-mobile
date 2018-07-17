@@ -10,7 +10,7 @@ module Fastlane
       # Default build configuration by environment
       DEFAULT_BUILD_CONFIGURATIONS = {
         dev: "Debug",
-        qa: "Alpha",
+        qa: "QA",
         stage: "Release",
         production: "Production"
       }.freeze
