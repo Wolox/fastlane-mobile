@@ -358,6 +358,9 @@ platform :ios do
 
     skip_itc = environment == :dev
 
+    # At least until fastlane does it automatically, it needs to be manual
+    UI.input "Before creating app, please make sure the branch '#{certificates_info[:branch]}' exists in the git repository '#{certificates_info[:url]}'. Then press Enter."
+
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
       environment: environment,
@@ -416,16 +419,28 @@ platform :ios do
     match(
       app_identifier: bundle_identifier,
       type: match_type,
-      readonly: true,
+      readonly: !options[:force] || true,
+      force: ptions[:force] || false,
       clone_branch_directly: true,
       shallow_clone: true,
       skip_docs: true,
       username: credentials[:account],
       team_id: credentials[:team],
       git_url: certificates_info[:url],
-      git_branch: certificates_info[:branch]
+      git_branch: certificates_info[:branch],
     )
 
+  end
+
+  private_lane :recreate_certificates do |options|
+    environment = options[:environment]
+    # At least until solution need to be manual: https://github.com/fastlane/fastlane/issues/10724
+    expiration = UI.input "Has your CERTIFICATE (not provisioning profile) expired? (y/N)"
+    unless expiration.empty? || expiration.downcase == "n"
+      certificates_info = get_certificates_info(environment: environment)
+      UI.input "Before continuing, please delete the old certificate from the certificates repo '#{certificates_info[:url]}' at branch '#{certificates_info[:branch]}'. Then press Enter."
+    end
+    refresh_certificates(environment: environment, force: true)
   end
 
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."

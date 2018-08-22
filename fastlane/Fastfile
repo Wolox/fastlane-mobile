@@ -124,6 +124,30 @@ platform :ios do
     refresh_certificates environment: :production
   end
 
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:dev` and `:qa`."
+  lane :recreate_development_certificates do
+    environment_config(environment: :dev)
+    certificates_config(environment: :dev)
+    recreate_certificates environment: :dev
+    environment_config(environment: :qa)
+    certificates_config(environment: :qa)
+    recreate_certificates environment: :qa
+  end
+
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:stage`."
+  lane :recreate_stage_certificates do
+    environment_config(environment: :stage)
+    certificates_config(environment: :stage)
+    recreate_certificates environment: :stage
+  end
+
+  desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
+  lane :recreate_production_certificates do
+    environment_config(environment: :production)
+    certificates_config(environment: :production)
+    recreate_certificates environment: :production, readonly: false
+  end
+
   desc "Executes the tests for the project using `scan`. This lane uses the configuration mapped to `:dev`."
   lane :test do
     environment_config(environment: :dev)
