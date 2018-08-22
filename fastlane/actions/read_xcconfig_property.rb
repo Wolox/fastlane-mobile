@@ -9,7 +9,7 @@ module Fastlane
       # is needed to be accessed from a fastlane script.
 
       def self.run(params)
-        xcconfig_path = Actions::GetConfigFilePathAction.run(build_configuration: options[:build_configuration])
+        xcconfig_path = Actions::GetConfigFilePathAction.run(build_configuration: params[:build_configuration])
         if !File.exist?(xcconfig_path)
           UI.important "Configuration file at path #{xcconfig_path} not found. Please make sure the file exists."
           return nil
@@ -27,7 +27,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, type: Symbol),
+          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, type: String),
           FastlaneCore::ConfigItem.new(key: :xcconfig_key, optional: false),
         ]
       end

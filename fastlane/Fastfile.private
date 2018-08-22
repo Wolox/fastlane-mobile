@@ -272,10 +272,6 @@ platform :ios do
 
     UI.message "Attempting to create push certificates for build configuration '#{build_configuration}'"
     UI.message "Creating push certificates as: '#{is_development ? 'development' : 'production'}' and bundle ID: '#{bundle_identifier}'"
-    confirmation = UI.input "If the parameters are correct, proceed: Y/n"
-    unless confirmation.empty? || confirmation.downcase == "y"
-      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
-    end
 
     desc "Password for current user from keychain"
     user = credentials[:account]
@@ -328,7 +324,7 @@ platform :ios do
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
       include_bitcode: false
     }
-    if project_file.include? ".xcworkspace" do
+    if project_file.include? ".xcworkspace"
       params[:workspace] = project_file
     else
       params[:project] = project_file
@@ -361,10 +357,6 @@ platform :ios do
     UI.message "Creating application using name: '#{app_name}' and bundle ID: '#{bundle_identifier}'"
     UI.message "The application creation in iTunes Connect will be #{skip_itc ? 'skipped' : 'performed'}"
     UI.message "Creating profile with match type '#{match_type}' and bundle ID: '#{bundle_identifier}'"
-    confirmation = UI.input "If the parameters are correct, proceed: Y/n"
-    unless confirmation.empty? || confirmation.downcase == "y"
-      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
-    end
 
     desc "Create App ID in developer center"
     produce(

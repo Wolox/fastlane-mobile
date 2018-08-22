@@ -9,6 +9,7 @@ module Fastlane
         project_name = Actions::ProjectNameAction.project_filename
 
         project = Xcodeproj::Project.open(project_name)
+        build_configuration_name = params[:build_configuration]
         build_configuration = project.build_configurations.detect { |config| config.name == build_configuration_name }
         xcconfig_path = build_configuration.base_configuration_reference.path
         return xcconfig_path
@@ -22,7 +23,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, type: Symbol)
+          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, type: String)
         ]
       end
 
