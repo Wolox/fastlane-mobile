@@ -5,7 +5,7 @@ module Fastlane
     class ProjectNameAction < Action
 
       PROJECT_EXTENSION_ENV_KEY = "PROJECT_EXTENSION".freeze
-      PROJECT_NAME_ENV_KEY = "PROJECT_NAME".freeze
+      PROJECT_NAME_ENV_KEY = "PROJECT_FILE_NAME".freeze
 
       DEFAULT_PROJECT_EXTENSION = ".xcodeproj".freeze
 

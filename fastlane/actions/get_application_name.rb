@@ -5,7 +5,8 @@ module Fastlane
       # Given an environment
       # this script returns the application name associated to it.
 
-      ENV_KEY = "APP_NAME".freeze
+      ENV_KEY = "APP_ENV_NAME".freeze
+      PARTIAL_ENV_KEY = "APP_NAME".freeze
 
       # Default App ID names by environment
       DEFAULT_APPLICATION_NAMES = {
@@ -17,7 +18,8 @@ module Fastlane
 
       def self.run(params)
         info = Actions::GetEnvironmentInfoAction.run(environment: params[:environment])
-        (info[ENV_KEY] || DEFAULT_APPLICATION_NAMES[params[:environment]]) % params[:project_name]
+        project_name = info[PARTIAL_ENV_KEY] || Actions::ProjectNameAction.run({})
+        (info[ENV_KEY] || DEFAULT_APPLICATION_NAMES[params[:environment]]) % project_name
       end
 
       # Fastlane Action class required functions.
@@ -29,7 +31,6 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
-          FastlaneCore::ConfigItem.new(key: :project_name, optional: true, default_value: Actions::ProjectNameAction.default_project_name),
         ]
       end
 

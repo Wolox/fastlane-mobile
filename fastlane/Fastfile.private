@@ -47,7 +47,8 @@ platform :ios do
 
     desc "Confirm data"
     build_config = get_build_configuration(environment: environment)
-    app_name = get_application_name(environment: environment, project_name: project_name)
+    file_name = Actions::ProjectNameAction.default_project_filename
+    app_name = get_application_name(environment: environment)
     bundle_id = infer_bundle_identifier(environment: environment)
     scheme = get_scheme(environment: environment)
 
@@ -56,6 +57,7 @@ platform :ios do
          title: "Configurations for environment '#{environment}'".green,
          headings: [],
          rows: FastlaneCore::PrintTable.transform_output([
+           ['Project File Name', file_name],
            ['Application Name', app_name],
            ['Build Configuration', build_config],
            ['Scheme', scheme],
@@ -202,23 +204,24 @@ platform :ios do
         environment: environment
       )
 
-      desc "Get rollbar server access token from configuration file."
-      rollbar_server_access_token = read_xcconfig_property(
-        build_configuration: build_configuration,
-        xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
-      )
-
-      desc "In case rollbar server access token is present then do the uploading"
-      unless rollbar_server_access_token.to_s.empty?
-
-        desc "Upload dsym to rollbar."
-        upload_dsym(
-          access_token: rollbar_server_access_token,
-          version: String(next_build_number),
-          bundle_identifier: bundle_identifier,
-        )
-
-      end
+      # Uncomment if you are using rollbar
+      # desc "Get rollbar server access token from configuration file."
+      # rollbar_server_access_token = read_xcconfig_property(
+      #   build_configuration: build_configuration,
+      #   xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
+      # )
+      #
+      # desc "In case rollbar server access token is present then do the uploading"
+      # unless rollbar_server_access_token.to_s.empty?
+      #
+      #   desc "Upload dsym to rollbar."
+      #   upload_dsym(
+      #     access_token: rollbar_server_access_token,
+      #     version: String(next_build_number),
+      #     bundle_identifier: bundle_identifier,
+      #   )
+      #
+      # end
 
       desc "Upload the built app to TestFlight."
       UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
