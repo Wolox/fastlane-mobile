@@ -144,6 +144,7 @@ platform :ios do
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     credentials = get_credentials(environment: environment)
+    env_info = get_environment_info(environment: environment)
 
     if Actions::CheckBumpTypeAction.bump_type_allowed? environment, options[:bump_type]
       allowed_bump_types = Actions::CheckBumpTypeAction::ENVIRONMENT_ALLOWED_BUMP_TYPES[environment]
@@ -204,24 +205,23 @@ platform :ios do
         environment: environment
       )
 
-      # Uncomment if you are using rollbar
-      # desc "Get rollbar server access token from configuration file."
-      # rollbar_server_access_token = read_xcconfig_property(
-      #   build_configuration: build_configuration,
-      #   xcconfig_key: 'ROLLBAR_SERVER_ACCESS_TOKEN'
-      # )
-      #
-      # desc "In case rollbar server access token is present then do the uploading"
-      # unless rollbar_server_access_token.to_s.empty?
-      #
-      #   desc "Upload dsym to rollbar."
-      #   upload_dsym(
-      #     access_token: rollbar_server_access_token,
-      #     version: String(next_build_number),
-      #     bundle_identifier: bundle_identifier,
-      #   )
-      #
-      # end
+      unless env_info["ROLLBAR_ACCESS_TOKEN_KEY"].empty?
+        desc "Get rollbar server access token from configuration file."
+        rollbar_server_access_token = read_xcconfig_property(
+          build_configuration: build_configuration,
+          xcconfig_key: env_info["ROLLBAR_ACCESS_TOKEN_KEY"]
+        )
+
+        if rollbar_server_access_token.to_s.empty?
+          UI.abort_with_message "Your rollbar access token is empty in the config file for build configuration #{build_configuration}."
+        end
+        desc "Upload dsym to rollbar."
+        upload_dsym(
+          access_token: rollbar_server_access_token,
+          version: String(next_build_number),
+          bundle_identifier: bundle_identifier,
+        )
+      end
 
       desc "Upload the built app to TestFlight."
       UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"

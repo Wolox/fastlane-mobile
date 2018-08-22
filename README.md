@@ -81,13 +81,17 @@ BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcase
 
 SCHEME="The scheme to use for building the app"
       [optional: PROJECT_FILE_NAME by default]
+
+ROLLBAR_ACCESS_TOKEN_KEY="The xcconfig file's key with which I store the Rollbar access token"
+      [optional: if empty, it will act as if you don't use rollbar; if completed, it will upload the dsym file to Rollbar server when deploying]
 ```
 
-For any further configuration, you will have to modify the `Fastfile`s or the custom actions.
-For example, if you want to have the script take care of the changelog and distributing the build, you have to change `skip_waiting_for_build_processing` to `false` for pilot in the `Fastfile.private`.
+For any other task you want to do, you can add them to the `Fastfile`s existing lanes or the custom actions.
+For example, if you want to have the script take care of distributing the build, you have to change `skip_waiting_for_build_processing` to `false` for pilot in the `Fastfile.private` and then add the distributing part to the script.
+For any further configuration, you will have to
+
 
 ## Actions
 
 These fastlane scripts use many custom actions that can be found at the `actions` directory.
-Most of them take care of getting information for certain environment, so if you need to add an environment, you'll need to modify them.
-Also most of them take care of getting a default value for some parameter if it was not specified in the configurations.
+Most of them take care of getting information for certain environment, so if you need to add an environment, you'll need to modify them so that they consider that new environment, since most of them take care of getting a default value for some parameter if it was not specified in the configurations.
