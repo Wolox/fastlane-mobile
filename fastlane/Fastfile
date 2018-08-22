@@ -1,6 +1,6 @@
-import 'Fastfile.private'
 fastlane_version '2.81.0'
 default_platform :ios
+import 'Fastfile.private'
 fastlane_require 'pry'
 
 platform :ios do

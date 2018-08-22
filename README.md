@@ -7,8 +7,10 @@ Fastlane scripts for deploying and managing Apple certificates in an iOS project
 
 To add fastlane scripts to your project, you need to:
 
+- install `ruby` on your machine. We recommend using [rbenv](http://rbenv.org/) as ruby versions manager.
+- setup the ruby version used for your project (`rbenv local x.y.z` will set it by creating a `.ruby_version` file like [this](./.ruby_version))
+- add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (as in the one [here](./Gemfile))
 - copy `fastlane` folder to your project's root dir
-- add fastlane to the Gemfile with a compatible version (as in the one [here](./Gemfile))
 - run bundle install
 
 and that's it!
