@@ -17,11 +17,13 @@ platform :ios do
 
   desc "After all the steps have completed succesfully."
   after_all do |lane|
+    set_config_to_default
     clean
   end
 
   desc "If there was an error."
   error do |lane, exception|
+    set_config_to_default
     clean
   end
 

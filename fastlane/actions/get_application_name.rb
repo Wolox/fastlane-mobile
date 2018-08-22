@@ -10,9 +10,9 @@ module Fastlane
 
       # Default App ID names by environment
       DEFAULT_APPLICATION_NAMES = {
-        dev: "%s Debug",
-        qa: "%s Alpha",
-        stage: "%s",
+        dev: "%s Dev",
+        qa: "%s QA",
+        stage: "%s Stage",
         production: "%s"
       }.freeze
 
