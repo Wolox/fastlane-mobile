@@ -22,13 +22,25 @@ and that's it!
 You can get detailed information on all the things you can do with these scripts in fastlane [README](./fastlane/README.md).
 Remember to run all fastlane commands preceeded by `bundle exec` (you can create an alias for this so it's easier).
 
+**Warning**: If you are using extra configurations, for example, if you have a ReactNative project using .env files of your own,
+you may want to add a switch of .env files for each `release` lane in the [Fastfile](./fastlane/Fastfile), like the following example:
+```
+lane :release_qa do
+  cp .env .env.bkp
+  cp .env.production .env
+  ...normal lane...
+  cp .env.bkp .env
+  rm .env.bkp
+end
+```
+
 ## Environments
 
 These scripts handle 4 environments:
 - dev: intended for development
 - qa: intended for qa testing
 - stage: intended for user/client testing
-- production: intended for users
+- production: intended for actual users
 
 If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions)
 and add lanes for it in the `Fastfile`.
