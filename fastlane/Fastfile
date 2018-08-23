@@ -101,7 +101,7 @@ platform :ios do
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:dev` and `:qa`."
-  lane :refresh_development_certificates do
+  lane :download_development_certificates do
     environment_config(environment: :dev)
     certificates_config(environment: :dev)
     refresh_certificates environment: :dev
@@ -111,14 +111,14 @@ platform :ios do
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:stage`."
-  lane :refresh_stage_certificates do
+  lane :_stage_certificates do
     environment_config(environment: :stage)
     certificates_config(environment: :stage)
     refresh_certificates environment: :stage
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
-  lane :refresh_production_certificates do
+  lane :_production_certificates do
     environment_config(environment: :production)
     certificates_config(environment: :production)
     refresh_certificates environment: :production
