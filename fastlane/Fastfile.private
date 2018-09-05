@@ -449,6 +449,9 @@ platform :ios do
     # Devices are only important for development
     credentials = get_credentials(environment: :dev)
     certificates_info = get_certificates_info(environment: :dev)
+    build_configuration = get_build_configuration(build_configuration: :dev)
+    match_type = get_match_type(build_configuration: :dev)
+    bundle_id = infer_bundle_identifier(environment: :dev)
 
     desc "Ask the user for device name and device UDID"
     device_name = prompt(text: 'Enter the device name: ')
@@ -464,6 +467,8 @@ platform :ios do
     desc "Refresh provisioning profiles adding the new device."
     match(
       force_for_new_devices: true,
+      app_identifier: bundle_id,
+      type: match_type,
       clone_branch_directly: true,
       username: credentials[:account],
       team_id: credentials[:team],
