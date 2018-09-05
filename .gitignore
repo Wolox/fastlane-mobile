@@ -1,0 +1,5 @@
+# Mac noise
+.DS_Store
+
+# Fastlane noise
+*/report.xml

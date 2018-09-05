@@ -1,3 +1,5 @@
+require 'spaceship'
+
 module Fastlane
   module Actions
     class LatestTestflightVersionAction < Action
@@ -5,11 +7,9 @@ module Fastlane
       # Retrieves the latest version uploaded to ItunesConnect
 
       def self.run(params)
-        Spaceship::Tunes.login
 
-        # This may be done automatically, but for some reason it has to be done manually.
-        # Open issue: https://github.com/fastlane/fastlane/issues/10944
-        Spaceship::Tunes.client.team_id = CredentialsManager::AppfileConfig.try_fetch_value(:itc_team_id)
+        Spaceship::Tunes.login(params[:username])
+        Spaceship::Tunes.client.team_id = params[:team_id]
 
         app = Spaceship::Tunes::Application.find(params[:bundle_id])
         if app.nil?
@@ -31,6 +31,8 @@ module Fastlane
         [
           FastlaneCore::ConfigItem.new(key: :bundle_id, optional: false),
           FastlaneCore::ConfigItem.new(key: :initial_version_number, optional: false),
+          FastlaneCore::ConfigItem.new(key: :username, optional: false),
+          FastlaneCore::ConfigItem.new(key: :team_id, optional: false)
         ]
       end
 

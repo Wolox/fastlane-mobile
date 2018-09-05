@@ -7,23 +7,23 @@ module Fastlane
       # If there isn't a bump_type specified and there are many allowed bump_types, it will ask the user
 
       # Take care if any of these values needs to be changed. It may break the algoritmh!
-      
+
       FIRST_BUILD = 0
       FIRST_VERSION = "0.0.0".freeze
 
       ALL_BUMP_TYPES = %i(build patch minor major).freeze
-      BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES = {
-        test: [],
+      ENVIRONMENT_ALLOWED_BUMP_TYPES = {
+        dev: [],
         qa: [:build],
-        appstore: ALL_BUMP_TYPES,
-        production: ALL_BUMP_TYPES 
+        stage: ALL_BUMP_TYPES,
+        production: ALL_BUMP_TYPES
       }.freeze
 
       def self.run(params)
         is_first_deploy = params[:version] == FIRST_VERSION
-        allowed_bump_types = BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES[params[:build_configuration]]
+        allowed_bump_types = ENVIRONMENT_ALLOWED_BUMP_TYPES[params[:environment]]
 
-        # First deploy needs to be done as major. 
+        # First deploy needs to be done as major.
         # It is enforced in `Fastfile`.
         if is_first_deploy
           return :major
@@ -51,14 +51,14 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false, type: Symbol),
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
           FastlaneCore::ConfigItem.new(key: :version, optional: false),
           FastlaneCore::ConfigItem.new(key: :bump_type, optional: true, default_value: nil),
         ]
       end
 
       def self.bump_type_allowed?(build_configuration, bump_type)
-        return BUILD_CONFIGURATION_ALLOWED_BUMP_TYPES[build_configuration].include? bump_type
+        return ENVIRONMENT_ALLOWED_BUMP_TYPES[build_configuration].include? bump_type
       end
 
     end

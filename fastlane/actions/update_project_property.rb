@@ -9,13 +9,18 @@ module Fastlane
       # with the provided build setting value.
 
       def self.run(params)
-        project = Xcodeproj::Project.open(params[:project])
+        environment = params[:environment]
+        project_name = Actions::ProjectNameAction.project_filename
+        build_configuration_name = Actions::GetBuildConfigurationAction.run(environment: environment)
+        scheme = Actions::GetSchemeAction.run(environment: environment)
+
+        project = Xcodeproj::Project.open(project_name)
         build_configuration = project
-          .targets.find { |each| each.name == params[:scheme] }
-          .build_configurations.find { |each| each.name == params[:build_configuration] }
+          .targets.find { |each| each.name == scheme }
+          .build_configurations.find { |each| each.name == build_configuration_name }
 
         if build_configuration.nil?
-          UI.abort_with_message! "Build configuration '#{params[:build_configuration]}' is not configured."
+          UI.abort_with_message! "Build configuration '#{build_configuration_name}' for scheme '#{scheme}' (environment: '#{environment}') is not configured."
         end
 
         build_configuration.build_settings[params[:build_setting]] = params[:build_setting_value]
@@ -30,9 +35,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :project, optional: true, default_value: ProjectNameAction.default_project_filename),
-          FastlaneCore::ConfigItem.new(key: :scheme, optional: true, default_value: ProjectNameAction.default_project_name),
-          FastlaneCore::ConfigItem.new(key: :build_configuration, optional: false),
+          FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
           FastlaneCore::ConfigItem.new(key: :build_setting, optional: false),
           FastlaneCore::ConfigItem.new(key: :build_setting_value, optional: false),
         ]
