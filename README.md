@@ -11,7 +11,7 @@ To add fastlane scripts to your project, you need to:
 - setup the ruby version used for your project (`rbenv local x.y.z` will set it by creating a `.ruby_version` file like [this](./.ruby_version))
 - add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (as in the one [here](./Gemfile))
 - copy `fastlane` folder to your project's root dir
-- run bundle install
+- run `bundle install`
 
 and that's it!
 
