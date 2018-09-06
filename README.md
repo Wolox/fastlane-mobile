@@ -37,10 +37,10 @@ end
 ## Environments
 
 These scripts handle 4 environments:
-- dev: intended for development
-- qa: intended for qa testing
-- stage: intended for user/client testing
-- production: intended for actual users
+- **dev**: intended for development
+- **qa**: intended for qa testing
+- **stage**: intended for user/client testing
+- **production**: intended for actual users
 
 If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions)
 and add lanes for it in the `Fastfile`.
