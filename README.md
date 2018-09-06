@@ -28,7 +28,7 @@ you may want to add a switch of .env files for each `release` lane in the [Fastf
 lane :release_qa do
   cp .env .env.bkp
   cp .env.production .env
-  ...normal lane...
+  ...normal lane code...
   cp .env.bkp .env
   rm .env.bkp
 end
