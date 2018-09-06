@@ -89,7 +89,7 @@ TEAM_NAME="Your team's name used for creating the bundle id"
       [optional: PROJECT_FILE_NAME by default]
 BUNDLE_ID="The bundle identifier, in relation to the TEAM_NAME and the PROJECT_NAME"
       [optional: default in custom action]
-      [example: "com.%s.%s.qa" == "com.TEAM_NAME.PROJECT_NAME.qa" or "com.%s.MyProject.dev" == "com.TEAM_NAME.MyProject.dev"]
+      [example: "com.%s.%s.qa" == "com.TEAM_NAME.PROJECT_FILE_NAME.qa" or "com.%s.MyProject.dev" == "com.TEAM_NAME.MyProject.dev"]
 BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcased"
       [optional: false by default]
 
