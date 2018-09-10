@@ -44,7 +44,8 @@ platform :ios do
   private_lane :environment_config do |options|
 
     environment = options[:environment]
-
+    force_setting = options[:force_setting] || false
+    
     desc "Confirm data"
     build_config = get_build_configuration(environment: environment)
     file_name = Actions::ProjectNameAction.default_project_filename
@@ -52,21 +53,23 @@ platform :ios do
     bundle_id = infer_bundle_identifier(environment: environment)
     scheme = get_scheme(environment: environment)
 
-    puts("")
-    puts(Terminal::Table.new(
-         title: "Configurations for environment '#{environment}'".green,
-         headings: [],
-         rows: FastlaneCore::PrintTable.transform_output([
-           ['Project File Name', file_name],
-           ['Application Name', app_name],
-           ['Build Configuration', build_config],
-           ['Scheme', scheme],
-           ['Bundle Identifier', bundle_id]
-        ])
-    ))
-    confirmation = UI.input "If the parameters are correct, proceed: y/N"
-    unless confirmation.downcase == "y"
-      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+    unless force_setting
+      puts("")
+      puts(Terminal::Table.new(
+           title: "Configurations for environment '#{environment}'".green,
+           headings: [],
+           rows: FastlaneCore::PrintTable.transform_output([
+             ['Project File Name', file_name],
+             ['Application Name', app_name],
+             ['Build Configuration', build_config],
+             ['Scheme', scheme],
+             ['Bundle Identifier', bundle_id]
+          ])
+      ))
+      confirmation = UI.input "If the parameters are correct, proceed: y/N"
+      unless confirmation.downcase == "y"
+        UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+      end
     end
 
     desc "Set bundle identifier"
@@ -82,6 +85,7 @@ platform :ios do
     environment = options[:environment]
     credentials = get_credentials(environment: environment)
     certificates_info = get_certificates_info(environment: environment)
+    force_setting = options[:force_setting] || false
 
     desc "Confirm certificates and credentials information"
     team_id = credentials[:team]
@@ -90,21 +94,23 @@ platform :ios do
     git_url = certificates_info[:url]
     git_branch = certificates_info[:branch]
 
-    puts("")
-    puts(Terminal::Table.new(
-         title: "Configurations for environment '#{environment}'".green,
-         headings: [],
-         rows: FastlaneCore::PrintTable.transform_output([
-           ['Developer Center Team ID', team_id],
-           ['iTunes Connect Team ID', itc_team_id],
-           ['Apple Account', apple_account],
-           ['Git url for certificates', git_url],
-           ['Git branch for team', git_branch]
-        ])
-    ))
-    confirmation = UI.input "If the parameters are correct, proceed: y/N"
-    unless confirmation.downcase == "y"
-      UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+    unless force_setting
+      puts("")
+      puts(Terminal::Table.new(
+           title: "Configurations for environment '#{environment}'".green,
+           headings: [],
+           rows: FastlaneCore::PrintTable.transform_output([
+             ['Developer Center Team ID', team_id],
+             ['iTunes Connect Team ID', itc_team_id],
+             ['Apple Account', apple_account],
+             ['Git url for certificates', git_url],
+             ['Git branch for team', git_branch]
+          ])
+      ))
+      confirmation = UI.input "If the parameters are correct, proceed: y/N"
+      unless confirmation.downcase == "y"
+        UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
+      end
     end
 
     desc "Set Development Team"
@@ -119,7 +125,7 @@ platform :ios do
     default_env_per_build_config = Actions::GetBuildConfigurationAction.get_all_build_configurations.invert
     default_env_per_build_config.each do |key, value|
       general_config(environment: value)
-      certificates_config(environment: value)
+      certificates_config(environment: value, force_setting: true)
     end
   end
 
@@ -213,7 +219,7 @@ platform :ios do
         environment: environment
       )
 
-      unless env_info["ROLLBAR_ACCESS_TOKEN_KEY"].empty?
+      unless (env_info["ROLLBAR_ACCESS_TOKEN_KEY"] || "").empty?
         desc "Get rollbar server access token from configuration file."
         rollbar_server_access_token = read_xcconfig_property(
           build_configuration: build_configuration,
@@ -414,13 +420,12 @@ platform :ios do
     credentials = get_credentials(environment: environment)
     certificates_info = get_certificates_info(environment: environment)
     bundle_identifier = infer_bundle_identifier(environment: environment)
-
     desc "Download provisioning profile and certificates if not present."
     match(
       app_identifier: bundle_identifier,
       type: match_type,
-      readonly: !options[:force] || true,
-      force: ptions[:force] || false,
+      readonly: !(options[:force] || false),
+      force: options[:force] || false,
       clone_branch_directly: true,
       shallow_clone: true,
       skip_docs: true,

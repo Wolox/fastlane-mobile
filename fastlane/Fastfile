@@ -1,7 +1,7 @@
+fastlane_require 'pry'
 fastlane_version '2.81.0'
 default_platform :ios
 import 'Fastfile.private'
-fastlane_require 'pry'
 
 platform :ios do
 
@@ -111,14 +111,14 @@ platform :ios do
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:stage`."
-  lane :_stage_certificates do
+  lane :download_stage_certificates do
     environment_config(environment: :stage)
     certificates_config(environment: :stage)
     refresh_certificates environment: :stage
   end
 
   desc "Updates or downloads the `Certificates` and `Provisioning Profiles` for the configurations mapped to `:production`."
-  lane :_production_certificates do
+  lane :download_production_certificates do
     environment_config(environment: :production)
     certificates_config(environment: :production)
     refresh_certificates environment: :production

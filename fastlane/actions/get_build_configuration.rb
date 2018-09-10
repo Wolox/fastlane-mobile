@@ -20,12 +20,13 @@ module Fastlane
       end
 
       def self.get_all_build_configurations
-        {
+        build_configs = {
           dev: Actions::GetBuildConfigurationAction.run(environment: :dev),
           qa: Actions::GetBuildConfigurationAction.run(environment: :qa),
           stage: Actions::GetBuildConfigurationAction.run(environment: :stage),
           production: Actions::GetBuildConfigurationAction.run(environment: :production)
         }
+        build_configs.select { |env, config_name| !config_name.empty? }
       end
 
       # Fastlane Action class required functions.
