@@ -87,7 +87,7 @@ APP_ENV_NAME="The Application's name, in relation to the APP_NAME, for the envir
 
 TEAM_NAME="Your team's name used for creating the bundle id"
       [optional: PROJECT_FILE_NAME by default]
-BUNDLE_ID="The bundle identifier, in relation to the TEAM_NAME and the PROJECT_NAME"
+BUNDLE_ID="The bundle identifier, in relation to the TEAM_NAME and the PROJECT_FILE_NAME"
       [optional: default in custom action]
       [example: "com.%s.%s.qa" == "com.TEAM_NAME.PROJECT_FILE_NAME.qa" or "com.%s.MyProject.dev" == "com.TEAM_NAME.MyProject.dev"]
 BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcased"
