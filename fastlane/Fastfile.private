@@ -45,7 +45,7 @@ platform :ios do
 
     environment = options[:environment]
     force_setting = options[:force_setting] || false
-    
+
     desc "Confirm data"
     build_config = get_build_configuration(environment: environment)
     file_name = Actions::ProjectNameAction.default_project_filename
@@ -66,7 +66,7 @@ platform :ios do
              ['Bundle Identifier', bundle_id]
           ])
       ))
-      confirmation = UI.input "If the parameters are correct, proceed: y/N"
+      confirmation = input "If the parameters are correct, proceed: y/N", "y"
       unless confirmation.downcase == "y"
         UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
       end
@@ -107,7 +107,7 @@ platform :ios do
              ['Git branch for team', git_branch]
           ])
       ))
-      confirmation = UI.input "If the parameters are correct, proceed: y/N"
+      confirmation = input "If the parameters are correct, proceed: y/N", "y"
       unless confirmation.downcase == "y"
         UI.user_error! "Aborting due to parameters misconfiguration. Correct them and run the lane again."
       end
@@ -365,7 +365,7 @@ platform :ios do
     skip_itc = environment == :dev
 
     # At least until fastlane does it automatically, it needs to be manual
-    UI.input "Before creating app, please make sure the branch '#{certificates_info[:branch]}' exists in the git repository '#{certificates_info[:url]}'. Then press Enter."
+    input "Before creating app, please make sure the branch '#{certificates_info[:branch]}' exists in the git repository '#{certificates_info[:url]}'. Then press Enter.", ""
 
     desc "Bundle identifier from xCode project"
     bundle_identifier = read_project_property(
@@ -440,10 +440,10 @@ platform :ios do
   private_lane :recreate_certificates do |options|
     environment = options[:environment]
     # At least until solution need to be manual: https://github.com/fastlane/fastlane/issues/10724
-    expiration = UI.input "Has your CERTIFICATE (not provisioning profile) expired? (y/N)"
+    expiration = input "Has your CERTIFICATE (not provisioning profile) expired? (y/N)", "N"
     unless expiration.empty? || expiration.downcase == "n"
       certificates_info = get_certificates_info(environment: environment)
-      UI.input "Before continuing, please delete the old certificate from the certificates repo '#{certificates_info[:url]}' at branch '#{certificates_info[:branch]}'. Then press Enter."
+      input "Before continuing, please delete the old certificate from the certificates repo '#{certificates_info[:url]}' at branch '#{certificates_info[:branch]}'. Then press Enter.", ""
     end
     refresh_certificates(environment: environment, force: true)
   end
@@ -494,6 +494,14 @@ platform :ios do
       team_id: credentials[:itc_team_id]
     )
 
+  end
+
+  def input(message, default)
+    if ENV["RUNNING_ON_CI"]
+      default
+    else
+      UI.input message
+    end
   end
 
 end
