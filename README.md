@@ -3,6 +3,15 @@ fastlane-mobile
 
 Fastlane scripts for deploying and managing Apple certificates in an iOS project.
 
+## Index
+
+- [Setup](#setup)
+- [Scripts](#scripts)
+- [Environments](#environments)
+- [Configuration](#configuration)
+- [Actions](#actions)
+- [Running on CI](#running-on-ci)
+
 ## Setup
 
 To add fastlane scripts to your project, you need to:
@@ -104,8 +113,13 @@ For any other task you want to do, you can add them to the `Fastfile`s existing 
 For example, if you want to have the script take care of distributing the build, you have to change `skip_waiting_for_build_processing` to `false` for pilot in the `Fastfile.private` and then add the distributing part to the script.
 For any further configuration, you will have to
 
-
 ## Actions
 
 These fastlane scripts use many custom actions that can be found at the `actions` directory.
 Most of them take care of getting information for certain environment, so if you need to add an environment, you'll need to modify them so that they consider that new environment, since most of them take care of getting a default value for some parameter if it was not specified in the configurations.
+
+
+## Running on CI
+
+If you are running these scripts on any Continuous Integration service, just set `RUNNING_ON_CI` environment variable (to any value not empty),
+so that all confirmation messages will be skipped assuming everything is correctly configured.
