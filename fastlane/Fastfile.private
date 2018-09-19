@@ -497,7 +497,7 @@ platform :ios do
   end
 
   def input(message, default)
-    if ENV["RUNNING_ON_CI"]
+    if ENV["RUNNING_ON_CI"] == "true"
       default
     else
       UI.input message

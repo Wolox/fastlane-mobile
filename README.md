@@ -121,5 +121,5 @@ Most of them take care of getting information for certain environment, so if you
 
 ## Running on CI
 
-If you are running these scripts on any Continuous Integration service, just set `RUNNING_ON_CI` environment variable (to any value not empty),
-so that all confirmation messages will be skipped assuming everything is correctly configured.
+If you are running these scripts on any Continuous Integration service, just set `RUNNING_ON_CI` environment variable to `true`,
+so that all confirmation messages are skipped, assuming everything is correctly configured.
