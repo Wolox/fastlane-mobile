@@ -13,6 +13,7 @@ module Fastlane
 
       def self.run(params)
         # Set provisioning profile in xCode
+        environment = params[:environment]
         Actions::UpdateProjectPropertyAction.run(
           environment: environment,
           build_setting: PROVISIONING_PROFILE_SPECIFIER,
