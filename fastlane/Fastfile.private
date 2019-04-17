@@ -341,8 +341,8 @@ platform :ios do
       # http://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps
       include_bitcode: false
     }
-    if project_file.include? ".xcworkspace"
-      params[:workspace] = project_file
+    if File.exist?("#{ENV['PWD']}/#{project_name}.xcworkspace")
+      params[:workspace] = "#{project_name}.xcworkspace"
     else
       params[:project] = project_file
     end
