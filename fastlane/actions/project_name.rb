@@ -55,19 +55,20 @@ module Fastlane
           .targets
           .find { |each| each.name == File.basename(default, File.extname(default)) }
         if target.nil?
-          UI.abort_with_message! "No target matching project name '#{default_proj}' found."
+          UI.abort_with_message! "No target matching project name '#{default}' found."
         end
         target.name
       end
 
-      # Just a wrapper for the matching scheme function.
+      # Default name of the project, based onf filename project.
       def self.default_project_name
-        matching_scheme
+        default = default_project
+        File.basename(default, File.extname(default))
       end
 
-      # Name of the project file.
+      # Default name of the project file.
       def self.default_project_filename
-        matching_scheme + project_extension
+        default_project_name + project_extension
       end
 
       def self.project_filename

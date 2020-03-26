@@ -9,12 +9,12 @@ module Fastlane
 
       def self.run(params)
         project_name = Actions::ProjectNameAction.project_filename
-        scheme_name = Actions::GetSchemeAction.run(params)
+        target_name = Actions::GetTargetAction.run(params)
         build_configuration_name = Actions::GetBuildConfigurationAction.run(params)
 
         project = Xcodeproj::Project.open(project_name)
-        scheme = project.native_targets.detect { |target| target.name == scheme_name }
-        build_configuration = scheme.build_configurations.detect { |config| config.name == build_configuration_name }
+        target = project.native_targets.detect { |target| target.name == target_name }
+        build_configuration = target.build_configurations.detect { |config| config.name == build_configuration_name }
         plist_path = build_configuration.build_settings[INFO_PLIST_KEY]
         return plist_path
       end

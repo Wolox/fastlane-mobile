@@ -18,8 +18,9 @@ module Fastlane
       OVERALL_ENVIRONMENT_FILE = (File.dirname(__FILE__) + "/../config/.env").freeze
 
       def self.run(params)
+        environment = params[:environment]
         # specific file has priority over general file around key collisions
-        params[:environment] ? Dotenv.load(OVERALL_ENVIRONMENT_FILE, ENVIRONMENTS_FILES[params[:environment]]) : Dotenv.load(OVERALL_ENVIRONMENT_FILE)
+        environment ? Dotenv.load(OVERALL_ENVIRONMENT_FILE, ENVIRONMENTS_FILES[environment]) : Dotenv.load(OVERALL_ENVIRONMENT_FILE)
       end
 
       # Fastlane Action class required functions.

@@ -18,7 +18,7 @@ module Fastlane
       BUNDLE_IDENTIFIERS_FORMAT = {
         dev: "com.%s.%s.dev",
         qa: "com.%s.%s.dev",
-        stage: "com.%s.%s",
+        stage: "com.%s.%s.stage",
         production: "com.%s.%s"
       }.freeze
 
@@ -27,7 +27,7 @@ module Fastlane
         environment_info = Actions::GetEnvironmentInfoAction.run(environment: params[:environment])
 
         project_name = ProjectNameAction.run(environment: environment)
-        team_name = environment_info[TEAM_NAME_ENV_KEY] || project_name
+        team_name = environment_info[TEAM_NAME_ENV_KEY]
         bundle_identifier_format = environment_info[BUNDLE_ID_ENV_KEY] || BUNDLE_IDENTIFIERS_FORMAT[environment]
         bundle_id = (bundle_identifier_format % [team_name, project_name]).gsub(/\s+/, "")
 

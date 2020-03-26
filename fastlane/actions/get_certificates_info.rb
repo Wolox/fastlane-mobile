@@ -12,7 +12,7 @@ module Fastlane
 
       def self.run(params)
         {
-          url: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[GIT_URL_ENV_KEY],
+          url: ENV[GIT_URL_ENV_KEY] || Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[GIT_URL_ENV_KEY],
           branch: Actions::GetEnvironmentInfoAction.run(environment: params[:environment])[GIT_BRANCH_ENV_KEY]
         }
       end
