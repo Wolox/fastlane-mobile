@@ -103,7 +103,8 @@ BUNDLE_ID_DOWNCASED="true or false: Whether the bundle id should all be downcase
       [optional: false by default]
 
 SCHEME="The scheme to use for building the app"
-      [optional: PROJECT_FILE_NAME by default]
+
+TARGET="The target to use for building the app"
 
 ROLLBAR_ACCESS_TOKEN_KEY="The xcconfig file's key with which I store the Rollbar access token"
       [optional: if empty, it will act as if you don't use rollbar; if completed, it will upload the dsym file to Rollbar server when deploying]
