@@ -14,8 +14,7 @@ platform :ios do
     project_targets = project.native_targets.map { |target| target.name }.uniq
     # If the intersection is all the targets we want, it's okay.
     unless (project_targets & target).size == target.size
-      UI.abort_with_message! "Not all target specified in .env files exist in project. Searched for #{project_targets
-      }."
+      UI.abort_with_message! "Not all targets specified in .env files exist in the project. Env targets: #{target} -> Project targets: #{project_targets}."
     end
 
     desc "Validate the configured build configurations exist in project."
@@ -23,7 +22,7 @@ platform :ios do
     project_build_configs = project.build_configurations.map { |config| config.name }.uniq
     # If the intersection is all the build configurations we want, it's okay.
     unless (project_build_configs & build_configurations).size == build_configurations.size
-      UI.abort_with_message! "Not all build configurations specified in .env files exist in project. Searched for #{build_configurations}."
+      UI.abort_with_message! "Not all build configurations specified in .env files exist in the project. Env configurations: #{build_configurations} -> Project configurations: #{project_build_configs}"
     end
 
     UI.success "Project validations succeeded!"
