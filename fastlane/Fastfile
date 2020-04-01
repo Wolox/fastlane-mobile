@@ -2,16 +2,6 @@ fastlane_require 'pry'
 fastlane_version '2.133.0'
 import 'Fastfile.private'
 
-desc "Update Bundle Identifier"
-  lane :update_bundle_identifier do |options|
-    project_name = options[:project_name]
-    update_app_identifier(
-      xcodeproj: "./#{project_name}.xcodeproj", # Optional path to xcodeproj, will use the first .xcodeproj if not set
-      plist_path: "./#{project_name}/Info.plist", # Path to info plist file, relative to xcodeproj
-      app_identifier: "#{options[:bundle_identifier]}" # The App Identifier
-    )
-  end
-
 platform :ios do |options| 
 
   desc "Before doing anything else."
@@ -173,6 +163,16 @@ platform :ios do |options|
   lane :test_config_qa do |options|
     environment_config(environment: :qa)
     certificates_config(environment: :qa)
+  end
+
+  desc "Update Bundle Identifier"
+  lane :update_bundle_identifier do |options|
+    project_name = options[:project_name]
+    update_app_identifier(
+      xcodeproj: "./#{project_name}.xcodeproj", # Optional path to xcodeproj, will use the first .xcodeproj if not set
+      plist_path: "./#{project_name}/Info.plist", # Path to info plist file, relative to xcodeproj
+      app_identifier: "#{options[:bundle_identifier]}" # The App Identifier
+    )
   end
 
 end
