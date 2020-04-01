@@ -14,15 +14,15 @@ module Fastlane
         environment = params[:environment]
         project_name = Actions::ProjectNameAction.project_filename
         build_configuration_name = Actions::GetBuildConfigurationAction.run(environment: environment)
-        scheme = Actions::GetSchemeAction.run(environment: environment)
+        target = Actions::GetTargetAction.run(environment: environment)
 
         project = Xcodeproj::Project.open(project_name)
         build_configuration = project
-          .targets.find { |each| each.name == scheme }
+          .targets.find { |each| each.name == target }
           .build_configurations.find { |each| each.name == build_configuration_name }
 
         if build_configuration.nil?
-          UI.abort_with_message! "Build configuration '#{build_configuration_name}' for scheme '#{scheme}' (environment: '#{environment}') is not configured."
+          UI.abort_with_message! "Build configuration '#{build_configuration_name}' for target '#{target}' (environment: '#{environment}') is not configured."
         end
 
         build_configuration.build_settings[params[:build_setting]]

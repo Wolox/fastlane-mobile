@@ -1,9 +1,8 @@
 fastlane_require 'pry'
-fastlane_version '2.120.0'
-default_platform :ios
+fastlane_version '2.133.0'
 import 'Fastfile.private'
 
-platform :ios do
+platform :ios do |options| 
 
   desc "Before doing anything else."
   before_all do |lane, options|
@@ -28,10 +27,10 @@ platform :ios do
   end
 
   desc "New release to iTunes Connect for QA (Alpha). This lane will never update the version, only the build number."
-  lane :release_qa do
+  lane :release_qa do |options|
     environment_config(environment: :qa)
     certificates_config(environment: :qa)
-    release environment: :qa
+    release environment: :qa, build_number: options[:build_number], version_number: options[:version_number] 
   end
 
   desc "New release to iTunes Connect for AppStore (Release) in Wolox account."
@@ -40,7 +39,7 @@ platform :ios do
   lane :release_stage do |options|
     environment_config(environment: :stage)
     certificates_config(environment: :stage)
-    release environment: :stage, bump_type: options[:bump_type]
+    release environment: :stage, bump_type: options[:bump_type], build_number: options[:build_number], version_number: options[:version_number] 
   end
 
   desc "New release to iTunes Connect for AppStore (Production) in third party account."
@@ -49,7 +48,7 @@ platform :ios do
   lane :release_production do |options|
     environment_config(environment: :production)
     certificates_config(environment: :production)
-    release environment: :production, bump_type: options[:bump_type]
+    release environment: :production, bump_type: options[:bump_type], build_number: options[:build_number], version_number: options[:version_number]
   end
 
   desc "Creates the `App ID` and `Provisioning Profile` for the configurations mapped to `:dev` and `:qa`."
@@ -155,9 +154,25 @@ platform :ios do
   end
 
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
-  lane :add_device do
+  lane :add_device do |options|
     certificates_config(environment: :dev)
     add_single_device
+  end
+
+  desc "Testing targets and environment configuration"
+  lane :test_config_qa do |options|
+    environment_config(environment: :qa)
+    certificates_config(environment: :qa)
+  end
+
+  desc "Update Bundle Identifier"
+  lane :update_bundle_identifier do |options|
+    project_name = options[:project_name]
+    update_app_identifier(
+      xcodeproj: "./#{project_name}.xcodeproj", # Optional path to xcodeproj, will use the first .xcodeproj if not set
+      plist_path: "./#{project_name}/Info.plist", # Path to info plist file, relative to xcodeproj
+      app_identifier: "#{options[:bundle_identifier]}" # The App Identifier
+    )
   end
 
 end

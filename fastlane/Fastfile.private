@@ -9,12 +9,12 @@ platform :ios do
 
     project = Xcodeproj::Project.open(Actions::ProjectNameAction.project_filename)
 
-    desc "Validate the configured schemes exist in project."
-    schemes = Actions::GetSchemeAction.get_all_schemes.values.uniq
-    project_schemes = project.native_targets.map { |target| target.name }.uniq
-    # If the intersection is all the schemes we want, it's okay.
-    unless (project_schemes & schemes).size == schemes.size
-      UI.abort_with_message! "Not all schemes specified in .env files exist in project. Searched for #{schemes}."
+    desc "Validate the configured target exist in project."
+    target = Actions::GetTargetAction.get_all_targets.values.uniq
+    project_targets = project.native_targets.map { |target| target.name }.uniq
+    # If the intersection is all the targets we want, it's okay.
+    unless (project_targets & target).size == target.size
+      UI.abort_with_message! "Not all targets specified in .env files exist in the project. Env targets: #{target} -> Project targets: #{project_targets}."
     end
 
     desc "Validate the configured build configurations exist in project."
@@ -22,7 +22,7 @@ platform :ios do
     project_build_configs = project.build_configurations.map { |config| config.name }.uniq
     # If the intersection is all the build configurations we want, it's okay.
     unless (project_build_configs & build_configurations).size == build_configurations.size
-      UI.abort_with_message! "Not all build configurations specified in .env files exist in project. Searched for #{build_configurations}."
+      UI.abort_with_message! "Not all build configurations specified in .env files exist in the project. Env configurations: #{build_configurations} -> Project configurations: #{project_build_configs}"
     end
 
     UI.success "Project validations succeeded!"
@@ -36,7 +36,7 @@ platform :ios do
     automatic_code_signing(
       path: project_file,
       use_automatic_signing: false,
-      targets: Actions::GetSchemeAction.get_all_schemes.values.uniq
+      targets: Actions::GetTargetAction.get_all_targets.values.uniq
     )
 
   end
@@ -52,6 +52,7 @@ platform :ios do
     app_name = get_application_name(environment: environment)
     bundle_id = infer_bundle_identifier(environment: environment)
     scheme = get_scheme(environment: environment)
+    target = get_target(environment: environment)
 
     unless force_setting
       puts("")
@@ -63,6 +64,7 @@ platform :ios do
              ['Application Name', app_name],
              ['Build Configuration', build_config],
              ['Scheme', scheme],
+             ['Target', target],
              ['Bundle Identifier', bundle_id]
           ])
       ))
@@ -155,10 +157,16 @@ platform :ios do
   desc "First deploy must always be a '#{:major}'."
   private_lane :release do |options|
 
+    has_version_param = options[:version_number] != nil
+    has_build_param = options[:build_number] != nil
+
     environment = options[:environment]
     build_configuration = get_build_configuration(environment: environment)
     credentials = get_credentials(environment: environment)
     env_info = get_environment_info(environment: environment)
+
+    UI.message "Forced to version #{options[:version_number]}" if has_version_param
+    UI.message "Forced to build #{options[:build_number]}" if has_build_param
 
     if Actions::CheckBumpTypeAction.bump_type_allowed? environment, options[:bump_type]
       allowed_bump_types = Actions::CheckBumpTypeAction::ENVIRONMENT_ALLOWED_BUMP_TYPES[environment]
@@ -188,18 +196,28 @@ platform :ios do
       team_id: credentials[:itc_team]
     ).to_i
 
-    desc "Check bump type to use for next build."
-    bump_type = check_bump_type(
-      environment: environment,
-      version: current_version_number,
-      bump_type: options[:bump_type]
-    ).to_s
+    if !has_version_param
+      desc "Check bump type to use for next build."
+      bump_type = check_bump_type(
+        environment: environment,
+        version: current_version_number,
+        bump_type: options[:bump_type]
+      ).to_s
+    end
 
     UI.message "Will release app increasing bump type: `#{bump_type}`"
 
-    desc "Define next build number depending on bump_type."
-    current_build_number = bump_type == "build" ? current_build_number : Actions::CheckBumpTypeAction::FIRST_BUILD
-    next_build_number = current_build_number + 1
+    if !has_build_param
+      desc "Define next build number depending on bump_type."
+      current_build_number = bump_type == "build" || has_version_param ? current_build_number : Actions::CheckBumpTypeAction::FIRST_BUILD
+      next_build_number = current_build_number + 1
+    else
+      next_build_number = options[:build_number].to_s
+    end
+
+    if has_version_param
+      current_version_number = options[:version_number].to_s
+    end
 
     desc "Set version and build number in Info.plist"
     set_info_plist_version(
@@ -209,9 +227,11 @@ platform :ios do
     )
 
     desc "Update version number in `Info.plist` depending in bump_type."
-    if bump_type != "build"
+    if bump_type != "build" && !has_version_param
       current_version_number = increment_version_number(bump_type: bump_type)
     end
+
+    input "\nCurrent Version: #{current_version_number}\nCurrent Build Number: #{current_build_number}\nNext Build Number: #{next_build_number}\nPress Enter to continue or ctrl+C to cancel", ""
 
     begin
       desc "Build"
@@ -378,6 +398,11 @@ platform :ios do
     UI.message "The application creation in iTunes Connect will be #{skip_itc ? 'skipped' : 'performed'}"
     UI.message "Creating profile with match type '#{match_type}' and bundle ID: '#{bundle_identifier}'"
 
+    puts(credentials)
+    puts(certificates_info)
+
+    input "If everything is OK, Press Enter.", ""
+
     desc "Create App ID in developer center"
     produce(
       app_name: app_name,
@@ -449,7 +474,7 @@ platform :ios do
   end
 
   desc "Adds a new device and regenerates the development `Provisioning Profile` to include it."
-  private_lane :add_single_device do
+  private_lane :add_single_device do |options|
 
     # Devices are only important for development
     credentials = get_credentials(environment: :dev)
@@ -491,7 +516,7 @@ platform :ios do
     pilot(
       skip_waiting_for_build_processing: true,
       username: credentials[:account],
-      team_id: credentials[:itc_team_id]
+      team_id: credentials[:itc_team]
     )
 
   end

@@ -11,7 +11,7 @@ module Fastlane
       DEFAULT_BUILD_CONFIGURATIONS = {
         dev: "Debug",
         qa: "QA",
-        stage: "Release",
+        stage: "Stage",
         production: "Production"
       }.freeze
 
