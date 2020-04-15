@@ -74,7 +74,7 @@ module Fastlane
       def self.project_filename
         env_info = Actions::GetEnvironmentInfoAction.run({})
         if env_info[PROJECT_NAME_ENV_KEY]
-          env_info[PROJECT_NAME_ENV_KEY] + env_info[PROJECT_EXTENSION_ENV_KEY] || DEFAULT_PROJECT_EXTENSION
+          ENV['PWD'] + "/" + env_info[PROJECT_NAME_ENV_KEY] + (env_info[PROJECT_EXTENSION_ENV_KEY] || DEFAULT_PROJECT_EXTENSION)
         else
           default_project
         end
