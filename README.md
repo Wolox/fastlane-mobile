@@ -15,6 +15,7 @@ Fastlane scripts for deploying iOS and Android apps, and managing Apple certific
 
 To add fastlane scripts to your project, you need to:
 
+- Install Xcode command line tools running `xcode-select --install` or `brew install fastlane`
 - Install `ruby` on your machine. We recommend using [rbenv](http://rbenv.org/) as ruby versions manager.
 - Setup the ruby version used for your project (run `rbenv local x.y.z` in your project's root dir to create a `.ruby_version` file like [this](./.ruby_version))
 - Add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (as in the one [here](./Gemfile))
