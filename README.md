@@ -44,6 +44,11 @@ and that's it!
             ...
       }
       ```
+* In the `gradle.properties` file add:
+```
+VERSION_NAME=1.0
+VERSION_CODE=1
+```
 
 ## Scripts
 
