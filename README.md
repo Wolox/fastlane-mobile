@@ -27,7 +27,7 @@ and that's it!
 
 ### Additional steps for Android
 
-* Install [Firebase CLI]([https://firebase.google.com/docs/cli#install-cli-mac-linux](https://firebase.google.com/docs/cli#install-cli-mac-linux))
+* Install [Firebase CLI](https://firebase.google.com/docs/cli#install-cli-mac-linux)
 * Copy the file [version.gradle](./android/version.gradle) to your `/app`  folder
 * In your `app/build.gradle` file:
 	* Import version.gradle: 
