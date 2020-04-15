@@ -84,6 +84,7 @@ TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
 GIT_URL="URL pointing to match certificates repository"
 GIT_BRANCH="Branch in GIT_URL repository to take the signing information from"
+RUNNING_ON_CI="(true/false) If true, all interactive messages will be skipped"
 
 BUILD_CONFIGURATION="your xcode project's build configuration for this environment"
       [optional: default in custom action]
@@ -127,6 +128,8 @@ APP_NAME="Name of the app"
 FIREBASE_GROUPS_PATH="Groups that will be assigned to releases, configured in App Distribution
 
 PLAY_CONSOLE_KEY_FILE_PATH="Path of the key file used to deploy to Play Console"
+
+RUNNING_ON_CI="(true/false) If true, all interactive messages will be skipped"
 
 PACKAGE_NAME="Package name of the app, for example: com.wolox.app"
 
