@@ -14,8 +14,6 @@ platform :android do
     version_name = options[:version_name]
     build_num = options[:build_number]
 
-    
-
     UI.message "Forced to version name #{version_name}" if version_name != nil
     gradle(task: "bumperVersionName", properties: { versionName: version_name }) if version_name != nil
 

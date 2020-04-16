@@ -49,6 +49,7 @@ and that's it!
 VERSION_NAME=1.0
 VERSION_CODE=1
 ```
+* (optional) In [groups](./android/fastlane/groups) file, add the name of the tester groups you want to invite. For more info, check "groups_file" in [Firebase documentation](https://firebase.google.com/docs/app-distribution/ios/distribute-fastlane#step_3_set_up_your_fastfile_and_distribute_your_app)
 * Add `gem 'fastlane-plugin-firebase_app_distribution'` in your [Gemfile](./android/Gemfile)
 * Run `bundle install` in your project's root dir
 
