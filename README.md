@@ -58,6 +58,8 @@ You can get detailed information on all the things you can do with these scripts
 
 Remember to run all fastlane commands preceded by `bundle exec` (you can create an alias for this so it's easier).
 
+For example: `bundle exec fastlane ios release_qa` or `bundle exec fastlane android distribute_qa`
+
 ## Environments
 
 These scripts handle 4 environments:
