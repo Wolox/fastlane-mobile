@@ -18,7 +18,7 @@ To add fastlane scripts to your project, you need to:
 - Install Xcode command line tools running `xcode-select --install` or `brew install fastlane`
 - Install `ruby` on your machine. We recommend using [rbenv](http://rbenv.org/) as ruby versions manager.
 - Setup the ruby version used for your project (run `rbenv local x.y.z` in your project's root dir to create a `.ruby_version` file like [this](./.ruby_version))
-- Add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (as in the one [here](./Gemfile))
+- Add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (check [iOS Gemfile](./ios/Gemfile) [Android Gemfile](./android/Gemfile))
 - Copy the corresponding `fastlane` folder to your project's root dir
 - Run `bundle install` in your project's root dir
 - (Optional) You may want to add some fastlane noise to the .gitignore of your project, like the ones [here](./.gitignore).
@@ -49,6 +49,8 @@ and that's it!
 VERSION_NAME=1.0
 VERSION_CODE=1
 ```
+* Add `gem 'fastlane-plugin-firebase_app_distribution'` in your [Gemfile](./android/Gemfile)
+* Run `bundle install` in your project's root dir
 
 ## Scripts
 
