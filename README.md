@@ -4,12 +4,12 @@ Fastlane scripts for deploying iOS and Android apps, and managing Apple certific
 
 ## Index
 
--  [Setup](#setup)
--  [Scripts](#scripts)
--  [Environments](#environments)
--  [Configuration](#configuration)
--  [Actions](#actions)
--  [Running on CI](#running-on-ci)
+- [Setup](#setup)
+- [Scripts](#scripts)
+- [Environments](#environments)
+- [Configuration](#configuration)
+- [Actions](#actions)
+- [Running on CI](#running-on-ci)
 
 ## Setup
 
@@ -61,17 +61,14 @@ Remember to run all fastlane commands preceded by `bundle exec` (you can create 
 ## Environments
 
 These scripts handle 4 environments:
--  **dev**: intended for development
--  **qa**: intended for qa testing
--  **stage**: intended for user/client testing
--  **production**: intended for actual users
+- **dev**: intended for development
+- **qa**: intended for qa testing
+- **stage**: intended for user/client testing
+- **production**: intended for actual users
 
 If you want to handle any other environment, you will have to add it manually to all custom [actions](#actions) and add new lanes in the `Fastfile`.
 
-If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones
-
-and don't use the fastlane lanes associated with those extra ones.
-
+If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones and don't use the fastlane lanes associated with those extra ones.
 
 ## Configuration
 
