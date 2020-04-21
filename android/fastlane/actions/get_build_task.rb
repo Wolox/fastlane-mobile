@@ -7,10 +7,10 @@ module Fastlane
 
       def self.run(params)
         environment = params[:environment].capitalize
-        is_firebase = params[:firebase]
+        create_aab = params[:aab]
 
         {
-          task: is_firebase ? "assemble" : "bundle",
+          task: create_aab ? "bundle" : "assemble", 
           flavor: "#{environment}",
         }
       end
@@ -24,7 +24,7 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
-          FastlaneCore::ConfigItem.new(key: :firebase, optional: true, type: Boolean)
+          FastlaneCore::ConfigItem.new(key: :aab, optional: true, type: Boolean)
         ]
       end
 

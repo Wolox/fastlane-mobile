@@ -29,27 +29,6 @@ and that's it!
 ### Additional steps for Android
 
 * Install [Firebase CLI](https://firebase.google.com/docs/cli#install-cli-mac-linux)
-* Copy the file [version.gradle](./android/version.gradle) to your `/app`  folder
-* In your `app/build.gradle` file:
-	* Import version.gradle: 
-      ```
-      apply from: 'version.gradle'
-      ```
-	* In the `defaultConfig` section, add:
-      ```
-      defaultConfig {
-            ...
-            versionName generateVersionName()
-            versionCode generateVersionCode()
-            ...
-      }
-      ```
-* In the `gradle.properties` file add:
-```
-VERSION_NAME=1.0
-VERSION_CODE=1
-```
-* (optional) In [groups](./android/fastlane/config/groups) file, add the name of the tester groups you want to invite. For more info, check "groups_file" in [Firebase documentation](https://firebase.google.com/docs/app-distribution/ios/distribute-fastlane#step_3_set_up_your_fastfile_and_distribute_your_app)
 * Add `gem 'fastlane-plugin-firebase_app_distribution'` in your [Gemfile](./android/Gemfile)
 * Run `bundle install` in your project's root dir
 
@@ -132,7 +111,7 @@ ROLLBAR_ACCESS_TOKEN_KEY="The xcconfig file's key with which I store the Rollbar
 ```
 APP_NAME="Name of the app"
 
-FIREBASE_GROUPS_PATH="Groups that will be assigned to releases, configured in App Distribution
+FIREBASE_GROUPS="Groups that will be assigned to releases, configured in App Distribution. e.g. `"qa-team, testers"`"
 
 PLAY_CONSOLE_KEY_FILE_PATH="Path of the key file used to deploy to Play Console"
 
