@@ -2,7 +2,7 @@ fastlane documentation
 ================
 # Installation
 
-Install the latest Xcode command line tools:
+Make sure you have the latest version of the Xcode command line tools installed:
 
 ```
 xcode-select --install
@@ -10,12 +10,9 @@ xcode-select --install
 
 Install _fastlane_ using
 ```
-# Using RubyGems
-sudo gem install fastlane -NV
-
-# Alternatively using Homebrew
-brew install fastlane
+[sudo] gem install fastlane -NV
 ```
+or alternatively using `brew cask install fastlane`
 
 # Available Actions
 ## Android
