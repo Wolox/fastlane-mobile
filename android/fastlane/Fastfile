@@ -1,5 +1,5 @@
 fastlane_require 'pry'
-fastlane_version '2.137.0'
+fastlane_version '2.146.1'
 import 'Fastfile.private'
 
 platform :android do |options| 
