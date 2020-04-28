@@ -29,6 +29,7 @@ and that's it!
 ### Additional steps for Android
 
 * Install [Firebase CLI](https://firebase.google.com/docs/cli#install-cli-mac-linux)
+* [Login in Firebase CLI](https://firebase.google.com/docs/cli#sign-in-test-cli)
 * Add `gem 'fastlane-plugin-firebase_app_distribution'` in your [Gemfile](./android/Gemfile)
 * Run `bundle install` in your project's root dir
 
