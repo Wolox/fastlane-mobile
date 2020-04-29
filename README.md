@@ -1,7 +1,6 @@
 fastlane-mobile
 ================
-
-Fastlane scripts for deploying and managing Apple certificates in an iOS project.
+Fastlane scripts for deploying iOS and Android apps, and managing Apple certificates in an iOS project.
 
 ## Index
 
@@ -16,32 +15,31 @@ Fastlane scripts for deploying and managing Apple certificates in an iOS project
 
 To add fastlane scripts to your project, you need to:
 
-- install `ruby` on your machine. We recommend using [rbenv](http://rbenv.org/) as ruby versions manager.
-- setup the ruby version used for your project (`rbenv local x.y.z` will set it by creating a `.ruby-version` file like [this](./.ruby-version))
-- add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (as in the one [here](./Gemfile))
-- copy `fastlane` folder to your project's root dir
-- run `bundle install`
+- Install Xcode command line tools running `xcode-select --install` or `brew install fastlane`
+- Install `ruby` on your machine. We recommend using [rbenv](http://rbenv.org/) as ruby versions manager.
+- Setup the ruby version used for your project (run `rbenv local x.y.z` in your project's root dir to create a `.ruby-version` file like [this](./ios/.ruby-version))
+- Add `fastlane` and `pry` to the Gemfile. Make sure to add `fastlane` with a compatible version (check [iOS Gemfile](./ios/Gemfile) [Android Gemfile](./android/Gemfile))
+- Copy the corresponding `fastlane` folder to your project's root dir
+- Run `bundle install` in your project's root dir
+- (Optional) You may want to add some fastlane noise to the .gitignore of your project, like the ones [here](./.gitignore).
 
 and that's it!
 
-(You may want to add some fastlane noise to the .gitignore of your project, like the ones [here](./.gitignore))
+
+### Additional steps for Android
+
+* Install [Firebase CLI](https://firebase.google.com/docs/cli#install-cli-mac-linux)
+* [Login in Firebase CLI](https://firebase.google.com/docs/cli#sign-in-test-cli)
+* Add `gem 'fastlane-plugin-firebase_app_distribution'` in your [Gemfile](./android/Gemfile)
+* Run `bundle install` in your project's root dir
 
 ## Scripts
 
-You can get detailed information on all the things you can do with these scripts in fastlane [README](./fastlane/README.md).
-Remember to run all fastlane commands preceeded by `bundle exec` (you can create an alias for this so it's easier).
+You can get detailed information on all the things you can do with these scripts in fastlane [iOS README](./ios/fastlane/README.md) and [Android README](./android/fastlane/README.md)
 
-**Warning**: If you are using extra configurations, for example, if you have a ReactNative project using .env files of your own,
-you may want to add a switch of .env files for each `release` lane in the [Fastfile](./fastlane/Fastfile), like the following example:
-```
-lane :release_qa do
-  cp .env .env.bkp
-  cp .env.production .env
-  ...normal lane code...
-  cp .env.bkp .env
-  rm .env.bkp
-end
-```
+Remember to run all fastlane commands preceded by `bundle exec` (you can create an alias for this so it's easier).
+
+For example: `bundle exec fastlane ios release_qa` or `bundle exec fastlane android distribute_qa`
 
 ## Environments
 
@@ -51,11 +49,9 @@ These scripts handle 4 environments:
 - **stage**: intended for user/client testing
 - **production**: intended for actual users
 
-If you want to handle any other environment, you will have to add it to all fastlane custom [actions](#actions)
-and add lanes for it in the `Fastfile`.
+If you want to handle any other environment, you will have to add it manually to all custom [actions](#actions) and add new lanes in the `Fastfile`.
 
-If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones
-and don't use the fastlane lanes associated with those extra ones.
+If you want less environments, don't worry! Just make the extra ones configuration the same as the useful ones and don't use the fastlane lanes associated with those extra ones.
 
 ## Configuration
 
@@ -64,16 +60,18 @@ You can configure some things different for each environment. For that, we use `
 All environment files should be under `config` directory.
 
 You can have a `.env` file with *general* configurations, and then a `X.env` file for specific configurations on *environment X*.
-(Of course if both general and specific configuration have a value for something, specific configuration will prevail.)
+(Of course if both general and specific configuration have a value for something, specific configuration will prevail)
 
-In any env file you can set up the following parameters:
+You can set up the following parameters in the env files:
 
+### iOS
 ```
 APPLE_ID="your@apple.account"
 TEAM_ID="your Developer Portal team id"
 ITC_TEAM_ID="your iTunnes Connect team id"
 GIT_URL="URL pointing to match certificates repository"
 GIT_BRANCH="Branch in GIT_URL repository to take the signing information from"
+RUNNING_ON_CI="(true/false) If true, all interactive messages will be skipped"
 
 BUILD_CONFIGURATION="your xcode project's build configuration for this environment"
       [optional: default in custom action]
@@ -110,17 +108,29 @@ ROLLBAR_ACCESS_TOKEN_KEY="The xcconfig file's key with which I store the Rollbar
       [optional: if empty, it will act as if you don't use rollbar; if completed, it will upload the dsym file to Rollbar server when deploying]
 ```
 
-For any other task you want to do, you can add them to the `Fastfile`s existing lanes or the custom actions.
-For example, if you want to have the script take care of distributing the build, you have to change `skip_waiting_for_build_processing` to `false` for pilot in the `Fastfile.private` and then add the distributing part to the script.
-For any further configuration, you will have to
+### Android
+```
+APP_NAME="Name of the app"
+
+FIREBASE_GROUPS="Groups that will be assigned to releases, configured in App Distribution. e.g. `"qa-team, testers"`"
+
+PLAY_CONSOLE_KEY_FILE_PATH="Path of the key file used to deploy to Play Console"
+
+RUNNING_ON_CI="(true/false) If true, all interactive messages will be skipped"
+
+PACKAGE_NAME="Package name of the app, for example: com.wolox.app"
+
+FIREBASE_APP="ID of your project in Firebase, for example: 1:1234567890"
+```
+
+To add new tasks, modify both `Fastfile` and `Fastfile.private` and add/modify actions in `/actions`
 
 ## Actions
 
 These fastlane scripts use many custom actions that can be found at the `actions` directory.
-Most of them take care of getting information for certain environment, so if you need to add an environment, you'll need to modify them so that they consider that new environment, since most of them take care of getting a default value for some parameter if it was not specified in the configurations.
+Most of the actions take care of getting information for a certain environment, so if you need to add an environment, you'll have to modify them so they consider the new environment, since most of them use default values if the parameter was not specified in the configuration files.
 
 
 ## Running on CI
 
-If you are running these scripts on any Continuous Integration service, just set `RUNNING_ON_CI` environment variable to `true`,
-so that all confirmation messages are skipped, assuming everything is correctly configured.
+If you are running these scripts on any Continuous Integration service, just set `RUNNING_ON_CI` environment variable to `true`, so that all confirmation messages are skipped, assuming everything is correctly configured.
