@@ -106,6 +106,16 @@ TARGET="The target to use for building the app"
 
 ROLLBAR_ACCESS_TOKEN_KEY="The xcconfig file's key with which I store the Rollbar access token"
       [optional: if empty, it will act as if you don't use rollbar; if completed, it will upload the dsym file to Rollbar server when deploying]
+
+METRICS_PROJECT="The project name in the metrics database"
+      [optional: if empty, the deploy time metric will be skipped]
+METRICS_REPO_NAME="The project repo name in the metrics database"
+      [optional: if empty, the deploy time metric will be skipped]
+METRICS_TECH="The project tech. Will be used to upload metrics"
+      [optional: if empty, the deploy time metric will be skipped]
+      [example: "react_native" or "ios"]
+METRICS_URL="The URL to the metrics server"
+      [optional: if empty, the deploy time metric will be skipped]
 ```
 
 ### Android
