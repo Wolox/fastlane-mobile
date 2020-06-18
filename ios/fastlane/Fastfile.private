@@ -1,3 +1,5 @@
+require 'benchmark'
+
 platform :ios do
 
   desc "Validate project configuration before running a lane."
@@ -233,43 +235,47 @@ platform :ios do
 
     input "\nCurrent Version: #{current_version_number}\nCurrent Build Number: #{current_build_number}\nNext Build Number: #{next_build_number}\nPress Enter to continue or ctrl+C to cancel", ""
 
-    begin
-      desc "Build"
-      build_application(
-        environment: environment
-      )
-
-      unless (env_info["ROLLBAR_ACCESS_TOKEN_KEY"] || "").empty?
-        desc "Get rollbar server access token from configuration file."
-        rollbar_server_access_token = read_xcconfig_property(
-          build_configuration: build_configuration,
-          xcconfig_key: env_info["ROLLBAR_ACCESS_TOKEN_KEY"]
+    time_elapsed = Benchmark.measure {
+      begin
+        desc "Build"
+        build_application(
+          environment: environment
         )
 
-        if rollbar_server_access_token.to_s.empty?
-          UI.abort_with_message "Your rollbar access token is empty in the config file for build configuration #{build_configuration}."
+        unless (env_info["ROLLBAR_ACCESS_TOKEN_KEY"] || "").empty?
+          desc "Get rollbar server access token from configuration file."
+          rollbar_server_access_token = read_xcconfig_property(
+            build_configuration: build_configuration,
+            xcconfig_key: env_info["ROLLBAR_ACCESS_TOKEN_KEY"]
+          )
+
+          if rollbar_server_access_token.to_s.empty?
+            UI.abort_with_message "Your rollbar access token is empty in the config file for build configuration #{build_configuration}."
+          end
+          desc "Upload dsym to rollbar."
+          upload_dsym(
+            access_token: rollbar_server_access_token,
+            version: String(next_build_number),
+            bundle_identifier: bundle_identifier,
+          )
         end
-        desc "Upload dsym to rollbar."
-        upload_dsym(
-          access_token: rollbar_server_access_token,
-          version: String(next_build_number),
-          bundle_identifier: bundle_identifier,
+
+        desc "Upload the built app to TestFlight."
+        UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
+        publish_testflight(environment: environment)
+
+      ensure
+        desc "Put back the default version number and build number in `Info.plist`."
+        set_info_plist_version(
+          environment: environment,
+          version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
+          build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
         )
       end
+    }
 
-      desc "Upload the built app to TestFlight."
-      UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
-      publish_testflight(environment: environment)
-
-    ensure
-      desc "Put back the default version number and build number in `Info.plist`."
-      set_info_plist_version(
-        environment: environment,
-        version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
-        build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
-      )
-    end
-
+    desc "Upload deploy time metric"
+    upload_metrics(environment: environment, time_elapsed: time_elapsed.real)
   end
 
   desc "Executes the tests for the project using `scan`."
