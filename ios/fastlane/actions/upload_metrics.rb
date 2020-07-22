@@ -21,7 +21,7 @@ module Fastlane
             UI.message "Skipping metrics upload: missing env variables"
             return
           end
-          UI.message "Uploading deploy time metric (#{params[:time_elapsed].to_s})"
+          UI.message "Uploading #{params[:metric_name]} metric (#{params[:time_elapsed].to_s})"
 
           uri = URI.parse metrics_url
 
@@ -31,7 +31,7 @@ module Fastlane
             repo_name: metrics_repo_name,
             project_name: metrics_project,
             metrics: [{
-              "name": "deploy-time",
+              "name": params[:metric_name],
               "value": params[:time_elapsed],
               "version": "1.0"
             }]
@@ -49,12 +49,12 @@ module Fastlane
           response = http.post(uri.path, body.to_json, header)
 
           if response.message === "OK"
-            UI.message "Metrics saved succesfully"
+            UI.message "#{params[:metric_name]} metric saved succesfully"
           else
-            UI.error "Metrics could not be saved"
+            UI.error "#{params[:metric_name]} metric could not be saved"
           end
         rescue
-          UI.error "Skipping metrics upload: unexpected error"
+          UI.error "Skipping #{params[:metric_name]} metric upload: unexpected error"
         end
       end
 
@@ -67,7 +67,8 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :environment, optional: false, type: Symbol),
-          FastlaneCore::ConfigItem.new(key: :time_elapsed, optional: false, type: Float)
+          FastlaneCore::ConfigItem.new(key: :time_elapsed, optional: false, type: Float),
+          FastlaneCore::ConfigItem.new(key: :metric_name, optional: false, type: String)
         ]
       end
 

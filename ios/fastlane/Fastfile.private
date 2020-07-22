@@ -235,8 +235,8 @@ platform :ios do
 
     input "\nCurrent Version: #{current_version_number}\nCurrent Build Number: #{current_build_number}\nNext Build Number: #{next_build_number}\nPress Enter to continue or ctrl+C to cancel", ""
 
-    time_elapsed = Benchmark.measure {
-      begin
+    begin
+      build_time_elapsed = Benchmark.measure {
         desc "Build"
         build_application(
           environment: environment
@@ -259,23 +259,28 @@ platform :ios do
             bundle_identifier: bundle_identifier,
           )
         end
+      }
 
+      deploy_time_elapsed = Benchmark.measure {
         desc "Upload the built app to TestFlight."
         UI.message "Uploading version `#{current_version_number}` build `#{next_build_number}`"
         publish_testflight(environment: environment)
+      }
 
-      ensure
-        desc "Put back the default version number and build number in `Info.plist`."
-        set_info_plist_version(
-          environment: environment,
-          version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
-          build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
-        )
-      end
-    }
+      desc "Upload build time metric"
+      upload_metrics(environment: environment, time_elapsed: build_time_elapsed.real, metric_name: "build-time")
 
-    desc "Upload deploy time metric"
-    upload_metrics(environment: environment, time_elapsed: time_elapsed.real)
+      desc "Upload deploy time metric"
+      upload_metrics(environment: environment, time_elapsed: deploy_time_elapsed.real, metric_name: "deploy-time")
+  
+    ensure
+      desc "Put back the default version number and build number in `Info.plist`."
+      set_info_plist_version(
+        environment: environment,
+        version_number: Actions::CheckBumpTypeAction::FIRST_VERSION.to_s,
+        build_number: Actions::CheckBumpTypeAction::FIRST_BUILD.to_s
+      )
+    end
   end
 
   desc "Executes the tests for the project using `scan`."
