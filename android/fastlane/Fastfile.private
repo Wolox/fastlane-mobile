@@ -1,3 +1,5 @@
+require 'benchmark'
+
 platform :android do
 
   desc "Validate"
@@ -32,42 +34,52 @@ platform :android do
   private_lane :distribute_to_firebase do |options|
     environment = options[:environment]
 
-    desc "Building .apk file..."
-    build_application(
-      environment: environment, 
-      version_name: options[:version_name],
-      build_number: options[:build_number]
-    )
+    deploy_time_elapsed = Benchmark.measure {
+      desc "Building .apk file..."
+      build_application(
+        environment: environment,
+        version_name: options[:version_name],
+        build_number: options[:build_number]
+      )
 
-    desc "Distributing application to Firebase App Distribution..."
-    firebase_info = get_firebase_info(environment: environment)
-    firebase_app_distribution(
-      app: firebase_info[:app],
-      groups: firebase_info[:groups]
-    )
+      desc "Distributing application to Firebase App Distribution..."
+      firebase_info = get_firebase_info(environment: environment)
+      firebase_app_distribution(
+        app: firebase_info[:app],
+        groups: firebase_info[:groups]
+      )
+    }
+
+    desc "Upload deploy time metric"
+    upload_metrics(environment: environment, time_elapsed: deploy_time_elapsed.real, metric_name: "deploy-time")
   end
 
   desc "Release the app to Google Play Console"
   private_lane :release_to_play_console do |options|
     environment = options[:environment]
 
-    desc "Building .aab file..."
-    build_application(
-      environment: environment, 
-      version_name: options[:version_name],
-      build_number: options[:build_number],
-      aab: true
-    )
+    deploy_time_elapsed = Benchmark.measure {
+      desc "Building .aab file..."
+      build_application(
+        environment: environment,
+        version_name: options[:version_name],
+        build_number: options[:build_number],
+        aab: true
+      )
 
-    desc "Distributing application to Google Play Console..."
-    play_console_info = get_play_console_info(environment: environment)
-    upload_to_play_store(
-      package_name: play_console_info[:package_name],
-      json_key: play_console_info[:key_path], 
-      track: play_console_info[:track],
-      release_status: play_console_info[:release_status],
-      skip_upload_apk: true
-    )
+      desc "Distributing application to Google Play Console..."
+      play_console_info = get_play_console_info(environment: environment)
+      upload_to_play_store(
+        package_name: play_console_info[:package_name],
+        json_key: play_console_info[:key_path],
+        track: play_console_info[:track],
+        release_status: play_console_info[:release_status],
+        skip_upload_apk: true
+      )
+    }
+
+    desc "Upload deploy time metric"
+    upload_metrics(environment: environment, time_elapsed: deploy_time_elapsed.real, metric_name: "deploy-time")
   end
 
   def input(message, default)

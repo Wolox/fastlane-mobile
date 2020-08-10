@@ -1,5 +1,8 @@
 # Mac noise
 .DS_Store
 
+## VS Code
+.history
+
 # Fastlane noise
 */report.xml
