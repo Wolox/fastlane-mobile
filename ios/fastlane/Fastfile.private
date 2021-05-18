@@ -191,18 +191,18 @@ platform :ios do
       build_setting: 'PRODUCT_BUNDLE_IDENTIFIER'
     )
 
-    # TODO: check how to make this work again, for some reason it's throowing an authenticatioon error even with the API key configured
-    # desc "Read current version number from `TestFlight`."
-    # current_version_number = latest_testflight_version(
-    #   bundle_id: bundle_identifier,
-    #   initial_version_number: Actions::CheckBumpTypeAction::FIRST_VERSION,
-    #   username: credentials[:account],
-    #   team_id: credentials[:itc_team]
-    # )
+    check_app_store_metadata(include_in_app_purchases: false, app_identifier: bundle_identifier, default_rule_level: :warn)
 
-    current_version_number = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
+    desc "Read current version number from `TestFlight`."
+    current_version_number = latest_testflight_version(
+      bundle_id: bundle_identifier,
+      initial_version_number: Actions::CheckBumpTypeAction::FIRST_VERSION,
+      username: credentials[:account],
+      team_id: credentials[:itc_team]
+    )
 
     desc "Read current build number from `TestFlight`."
+    
     current_build_number = latest_testflight_build_number(
       app_identifier: bundle_identifier,
       version: current_version_number,

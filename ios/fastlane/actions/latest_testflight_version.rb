@@ -8,17 +8,22 @@ module Fastlane
 
       def self.run(params)
 
-        Spaceship::Tunes.login(params[:username])
-        Spaceship::Tunes.client.team_id = params[:team_id]
-
-        app = Spaceship::Tunes::Application.find(params[:bundle_id])
+        app = Spaceship::ConnectAPI::App.find(params[:bundle_id])
         if app.nil?
           UI.abort_with_message! "The application with bundle ID '#{params[:bundle_id]}' is not yet created in iTunes Connect."
         end
-        if app.all_build_train_numbers.empty?
+
+        v = app.get_edit_app_store_version
+
+        if v.nil?
+          v = app.get_live_app_store_version 
+        end
+        
+        if v.nil?
           return params[:initial_version_number]
         end
-        app.all_build_train_numbers.map { |v| Gem::Version.new(v) }.max.to_s
+
+        return v.versionString.length === 3 ? "#{v.versionString}.0" : v.versionString
       end
 
       # Fastlane Action class required functions.
