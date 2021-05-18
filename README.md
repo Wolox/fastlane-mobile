@@ -22,6 +22,9 @@ To add fastlane scripts to your project, you need to:
 - Copy the corresponding `fastlane` folder to your project's root dir
 - Run `bundle install` in your project's root dir
 - (Optional) You may want to add some fastlane noise to the .gitignore of your project, like the ones [here](./.gitignore).
+- You need to generate an API key for fastlane to use, it is no longer possible to use it with login credentials, you can generate an API key using the following [guide](https://developer.apple.com/documentation/appstoreconnectapi/creating_api_keys_for_app_store_connect_api) (watch out, API keys can only be downloaded once from the appstore, so store it somewhere safe)
+- Once you have your API key you have to add the following keys to your .env files: KEY_ID (should be in the name of the file you downloaded from the appstore), ISSUER_ID (should be on the top part of the appstore page where you downloaded the key), KEY_FILEPATH (the path to your API key file)
+
 
 and that's it!
 
